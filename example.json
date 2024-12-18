@@ -1,0 +1,16 @@
+[
+  {
+    "wovenClass": "注入的类名",
+    "wovenMethod": "注入的方法名包括参数类型和返回类型",
+    "searchClass": {
+      "regex": "正则表达式",
+      "extendsClass": "继承的类名",
+      "callType": "调用搜索到的类型，caller，callee",
+      "callClass": "调用的的类名如果是caller不填，如果是callee就填相应的类类名",
+      "callMethod": "调用的的方法名包括参数类型和返回类型",
+      "callMethodValue": "调用的的方法填写参数,searchClass 就是当前数据，$n就是注入方法的参数,n代表第几个",
+      "useType": "使用的类型，className，new，class，如果是callee必填，否则不填",
+    }
+
+  }
+]
