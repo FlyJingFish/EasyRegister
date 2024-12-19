@@ -1,20 +1,24 @@
 package com.flyjingfish.universal_register
 
-import com.flyjingfish.universal_register.config.RootBooleanConfig
 import com.flyjingfish.universal_register.config.RootStringConfig
 import com.flyjingfish.universal_register.plugin.InitPlugin
-import com.flyjingfish.universal_register.utils.RouterClassUtils
+import com.flyjingfish.universal_register.utils.RegisterClassUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class UniversalRegisterPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        val enableStr = project.properties[RootBooleanConfig.ENABLE.propertyName]?:RootBooleanConfig.APP_INCREMENTAL.defaultValue
+        val enableStr = project.properties[RootStringConfig.ENABLE.propertyName]?:RootStringConfig.APP_INCREMENTAL.defaultValue
         val enable = enableStr == "true"
-        RouterClassUtils.enable = enable
+        RegisterClassUtils.enable = enable
         if (!enable){
             return
+        }
+
+        val mode = project.properties[RootStringConfig.MODE.propertyName]?.toString()?:RootStringConfig.MODE.defaultValue
+        RegisterClassUtils.mode = mode.ifEmpty {
+            RootStringConfig.MODE.defaultValue
         }
         InitPlugin.rootPluginDeepApply(project)
         InitPlugin.initFromFile(project)

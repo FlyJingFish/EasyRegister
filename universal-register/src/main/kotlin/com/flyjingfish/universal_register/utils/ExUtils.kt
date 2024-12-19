@@ -3,9 +3,16 @@ package com.flyjingfish.universal_register.utils
 import org.gradle.api.Project
 import org.objectweb.asm.Opcodes
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.util.zip.ZipInputStream
+
+fun registerTransformIgnoreJarDir(project:Project, variantName:String):String{
+    return project.buildDir.absolutePath+"/tmp/universal-register/${variantName}/tempTransformIgnoreJar/".adapterOSPath()
+}
 
 fun registerCompileTempJson(project:Project, variantName:String):String{
     return project.buildDir.absolutePath + "/tmp/universal-register/${variantName}/tempCompileClassJson/needDelClassInfo.json".adapterOSPath()
@@ -96,4 +103,43 @@ fun slashToDot(str: String): String {
 
 fun printLog(text: String) {
     println(text)
+}
+
+val JAR_SIGNATURE_EXTENSIONS = setOf("SF", "RSA", "DSA", "EC")
+fun String.isJarSignatureRelatedFiles(): Boolean {
+    return startsWith("META-INF/") && substringAfterLast('.') in JAR_SIGNATURE_EXTENSIONS
+}
+
+fun openJar(jarPath:String,destDir:String) {
+    // JAR文件路径和目标目录
+    ZipInputStream(FileInputStream(jarPath)).use { zis ->
+        while (true) {
+            val entry = zis.nextEntry ?: break
+            val entryName: String = entry.name
+            if (entryName.isEmpty() || entryName.startsWith("META-INF/") || "module-info.class" == entryName) {
+                continue
+            }
+            val filePath: String = destDir + File.separator + entryName
+            if (!entry.isDirectory) {
+                val file = File(filePath)
+                val parent = file.parentFile
+                if (!parent.exists()) {
+                    parent.mkdirs()
+                }
+                FileOutputStream(file).use {
+                    zis.copyTo(it)
+                }
+            } else {
+                File(filePath).mkdirs()
+            }
+        }
+    }
+}
+
+fun File.getFileClassname(directory :File):String {
+    return getRelativePath(directory).toClassPath()
+}
+
+fun String.toClassPath():String {
+    return replace(File.separatorChar, '/')
 }

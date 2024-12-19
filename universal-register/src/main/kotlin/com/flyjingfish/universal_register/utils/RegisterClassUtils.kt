@@ -2,14 +2,16 @@ package com.flyjingfish.universal_register.utils
 
 import com.flyjingfish.universal_register.bean.SearchClass
 import com.flyjingfish.universal_register.bean.WovenClass
+import com.flyjingfish.universal_register.config.RootStringConfig
 import org.gradle.api.Project
 import org.objectweb.asm.commons.Method
 import java.io.File
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-object RouterClassUtils {
+object RegisterClassUtils {
     var enable = true
+    var mode = RootStringConfig.MODE.defaultValue
     private val configJsonFileList = mutableListOf<File>()
     private val searchWovenClasses = mutableListOf<WovenClass>()
     private val searchClasses = mutableListOf<SearchClass>()
@@ -138,5 +140,21 @@ object RouterClassUtils {
             }
         }
         return null
+    }
+
+    fun isDebugMode(buildTypeName :String?,variantName :String):Boolean{
+        return if (mode == "auto" || mode == "debug"){
+            if (mode == "auto"){
+                if (buildTypeName != null){
+                    buildTypeName.lowercase() == "debug"
+                }else{
+                    variantName.lowercase().contains("debug")
+                }
+            }else{
+                true
+            }
+        }else{
+            false
+        }
     }
 }

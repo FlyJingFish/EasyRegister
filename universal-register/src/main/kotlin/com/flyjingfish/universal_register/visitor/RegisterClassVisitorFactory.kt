@@ -4,7 +4,7 @@ import com.android.build.api.instrumentation.AsmClassVisitorFactory
 import com.android.build.api.instrumentation.ClassContext
 import com.android.build.api.instrumentation.ClassData
 import com.android.build.api.instrumentation.InstrumentationParameters
-import com.flyjingfish.universal_register.utils.RouterClassUtils
+import com.flyjingfish.universal_register.utils.RegisterClassUtils
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.objectweb.asm.ClassVisitor
@@ -20,7 +20,7 @@ abstract class MyClassVisitorFactory : AsmClassVisitorFactory<MyParameters> {
 
     override fun isInstrumentable(classData: ClassData): Boolean {
         // 指定哪些类可以被修改，例如过滤某些包名
-        return RouterClassUtils.isWovenClass(classData.className)
+        return RegisterClassUtils.isWovenClass(classData.className)
     }
 }
 

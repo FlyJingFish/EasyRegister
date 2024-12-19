@@ -5,10 +5,10 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.DynamicFeaturePlugin
 import com.android.build.gradle.LibraryExtension
-import com.flyjingfish.universal_register.config.RootBooleanConfig
+import com.flyjingfish.universal_register.config.RootStringConfig
 import com.flyjingfish.universal_register.utils.AndroidConfig
 import com.flyjingfish.universal_register.utils.JsonUtils
-import com.flyjingfish.universal_register.utils.RouterClassUtils
+import com.flyjingfish.universal_register.utils.RegisterClassUtils
 import com.flyjingfish.universal_register.utils.adapterOSPath
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
 import org.gradle.api.Plugin
@@ -59,7 +59,7 @@ class CompilePlugin(private val root:Boolean): Plugin<Project> {
                     variant.javaCompile as AbstractCompile
                 }
             if (isApp){
-                val isIncrementalStr = project.properties[RootBooleanConfig.APP_INCREMENTAL.propertyName]?:RootBooleanConfig.APP_INCREMENTAL.defaultValue
+                val isIncrementalStr = project.properties[RootStringConfig.APP_INCREMENTAL.propertyName]?:RootStringConfig.APP_INCREMENTAL.defaultValue
                 val isIncremental = isIncrementalStr == "true"
                 if (!isIncremental){
                     javaCompile.outputs.upToDateWhen { return@upToDateWhen false }
@@ -89,6 +89,11 @@ class CompilePlugin(private val root:Boolean): Plugin<Project> {
 
     private fun doAopTask(project: Project, isApp:Boolean, variantName: String, buildTypeName: String,
                           javaCompile:AbstractCompile, kotlinPath: File, isAndroidModule : Boolean = true){
+        val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
+        if (!debugMode){
+            return
+        }
+
         val logger = project.logger
         val localInput = mutableListOf<File>()
         val javaPath = File(javaCompile.destinationDirectory.asFile.orNull.toString())

@@ -1,11 +1,13 @@
 package com.flyjingfish.universal_register.plugin
 
+import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.instrumentation.FramesComputationMode
 import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.gradle.AppPlugin
 import com.flyjingfish.universal_register.config.RootStringConfig
-import com.flyjingfish.universal_register.utils.RouterClassUtils
+import com.flyjingfish.universal_register.utils.RegisterClassUtils
 import com.flyjingfish.universal_register.visitor.MyClassVisitorFactory
 import org.gradle.api.Project
 
@@ -35,18 +37,18 @@ object InitPlugin{
 
     fun initFromFile(project: Project) {
         if (project.rootProject == project){
-            RouterClassUtils.clearConfigJsonFile()
+            RegisterClassUtils.clearConfigJsonFile()
             val configJsonFileStrs = project.properties[RootStringConfig.CONFIG_JSON.propertyName]?.toString()
             configJsonFileStrs?.split(",")?.forEach {
                 val configJsonFile = project.file(it)
-                RouterClassUtils.addConfigJsonFile(configJsonFile)
+                RegisterClassUtils.addConfigJsonFile(configJsonFile)
             }
-            RouterClassUtils.initConfig(project)
+            RegisterClassUtils.initConfig(project)
         }
     }
 
     fun initFromJson(jsons:List<String>) {
-        RouterClassUtils.initConfig(jsons)
+        RegisterClassUtils.initConfig(jsons)
     }
 
     fun registerApp(project: Project, registerHint :Boolean = true, registerTransform :Boolean = true) {
@@ -69,17 +71,35 @@ object InitPlugin{
     fun registerTransformClassesWith(project: Project,scope: InstrumentationScope) {
         val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
         androidComponents.onVariants { variant ->
-            variant.instrumentation.transformClassesWith(
-                MyClassVisitorFactory::class.java,
-                scope
-            ) { params ->
-                params.myConfig.set("My custom config")
+            val buildTypeName = variant.buildType
+            val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variant.name)
+            if (debugMode){
+                variant.instrumentation.transformClassesWith(
+                    MyClassVisitorFactory::class.java,
+                    scope
+                ) { params ->
+                    params.myConfig.set("My custom config")
+                }
+
+                // 指定字节码修改生效
+                variant.instrumentation.setAsmFramesComputationMode(
+                    FramesComputationMode.COPY_FRAMES
+                )
+            }else{
+                val task = project.tasks.register("${variant.name}AssembleUniversalRegisterTask", AssembleRegisterTask::class.java){
+                    it.variant = variant.name
+                }
+                variant.artifacts
+                    .forScope(ScopedArtifacts.Scope.ALL)
+                    .use(task)
+                    .toTransform(
+                        ScopedArtifact.CLASSES,
+                        AssembleRegisterTask::allJars,
+                        AssembleRegisterTask::allDirectories,
+                        AssembleRegisterTask::output
+                    )
             }
 
-            // 指定字节码修改生效
-            variant.instrumentation.setAsmFramesComputationMode(
-                FramesComputationMode.COPY_FRAMES
-            )
         }
     }
 

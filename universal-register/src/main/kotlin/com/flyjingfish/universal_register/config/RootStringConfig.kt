@@ -4,5 +4,8 @@ enum class RootStringConfig(
     val propertyName: String,
     val defaultValue: String,
 ) {
-    CONFIG_JSON("universalRouter.configJson", ""),
+    ENABLE("universalRegister.enable", "true"),
+    APP_INCREMENTAL("universalRegister.app.isIncremental", "false"),
+    MODE("universalRegister.mode", "auto"),
+    CONFIG_JSON("universalRegister.configJson", ""),
 }
