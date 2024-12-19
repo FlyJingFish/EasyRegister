@@ -1,0 +1,44 @@
+[
+  {
+    "wovenClass": "com.alibaba.android.arouter.core.LogisticsCenter",
+    "wovenMethod": "void loadRouterMap()",
+    "searchClass": {
+      "regex": "com.alibaba.android.arouter.routes.*?",
+      "extendsClass": "com.alibaba.android.arouter.facade.template.IRouteRoot",
+      "callType": "callee",
+      "callClass": "com.alibaba.android.arouter.core.LogisticsCenter",
+      "callMethod": "void register(String)",
+      "callMethodValue": "searchClass",
+      "useType": "className"
+    }
+
+  },
+  {
+    "wovenClass": "com.alibaba.android.arouter.core.LogisticsCenter",
+    "wovenMethod": "void loadRouterMap()",
+    "searchClass": {
+      "regex": "com.alibaba.android.arouter.routes.*?",
+      "extendsClass": "com.alibaba.android.arouter.facade.template.IProviderGroup",
+      "callType": "callee",
+      "callClass": "com.alibaba.android.arouter.core.LogisticsCenter",
+      "callMethod": "void register(String)",
+      "callMethodValue": "searchClass",
+      "useType": "className"
+    }
+
+  },
+  {
+    "wovenClass": "com.alibaba.android.arouter.core.LogisticsCenter",
+    "wovenMethod": "void loadRouterMap()",
+    "searchClass": {
+      "regex": "com.alibaba.android.arouter.routes.*?",
+      "extendsClass": "com.alibaba.android.arouter.facade.template.IInterceptorGroup",
+      "callType": "callee",
+      "callClass": "com.alibaba.android.arouter.core.LogisticsCenter",
+      "callMethod": "void register(String)",
+      "callMethodValue": "searchClass",
+      "useType": "className"
+    }
+
+  }
+]

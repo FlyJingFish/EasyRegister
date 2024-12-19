@@ -1,0 +1,17 @@
+[
+  {
+    "wovenClass": "com.sankuai.waimai.router.generated.ServiceLoaderInit",
+    "wovenMethod": "void init()",
+    "createWovenClass": true,
+    "searchClass": {
+      "regex": "^com.sankuai.waimai.router.generated.service.ServiceInit_[^$]+$",
+      "extendsClass": "",
+      "callType": "caller",
+      "callClass": "",
+      "callMethod": "void init()",
+      "callMethodValue": "",
+      "useType": ""
+    }
+
+  }
+]
