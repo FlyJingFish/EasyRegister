@@ -73,10 +73,14 @@ class CompilePlugin(private val root:Boolean): Plugin<Project> {
             }
             javaCompile.doLast{
 
-                val task = kotlinCompileFilePathMap["compile${variantName.capitalized()}Kotlin"]
+                val task = try {
+                    kotlinCompileFilePathMap["compile${variantName.capitalized()}Kotlin"]
+                } catch (_: Throwable) {
+                    null
+                }
                 val cacheDir = try {
                     task?.destinationDirectory?.get()?.asFile
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     null
                 }
                 val kotlinPath = cacheDir ?: File(project.buildDir.path + "/tmp/kotlin-classes/".adapterOSPath() + variantName)

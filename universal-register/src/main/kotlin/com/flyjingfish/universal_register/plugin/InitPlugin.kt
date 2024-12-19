@@ -69,37 +69,43 @@ object InitPlugin{
     }
 
     fun registerTransformClassesWith(project: Project,scope: InstrumentationScope) {
-        val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
-        androidComponents.onVariants { variant ->
-            val buildTypeName = variant.buildType
-            val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variant.name)
-            if (debugMode){
-                variant.instrumentation.transformClassesWith(
-                    MyClassVisitorFactory::class.java,
-                    scope
-                ) { params ->
-                    params.myConfig.set("My custom config")
+        try {
+            val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
+            androidComponents.onVariants { variant ->
+                val buildTypeName = variant.buildType
+                val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variant.name)
+                try {
+                    if (debugMode){
+                        variant.instrumentation.transformClassesWith(
+                            MyClassVisitorFactory::class.java,
+                            scope
+                        ) { params ->
+                            params.myConfig.set("My custom config")
+                        }
+
+                        // 指定字节码修改生效
+                        variant.instrumentation.setAsmFramesComputationMode(
+                            FramesComputationMode.COPY_FRAMES
+                        )
+                    }else{
+                        val task = project.tasks.register("${variant.name}AssembleUniversalRegisterTask", AssembleRegisterTask::class.java){
+                            it.variant = variant.name
+                        }
+                        variant.artifacts
+                            .forScope(ScopedArtifacts.Scope.ALL)
+                            .use(task)
+                            .toTransform(
+                                ScopedArtifact.CLASSES,
+                                AssembleRegisterTask::allJars,
+                                AssembleRegisterTask::allDirectories,
+                                AssembleRegisterTask::output
+                            )
+                    }
+                } catch (_: Throwable) {
                 }
 
-                // 指定字节码修改生效
-                variant.instrumentation.setAsmFramesComputationMode(
-                    FramesComputationMode.COPY_FRAMES
-                )
-            }else{
-                val task = project.tasks.register("${variant.name}AssembleUniversalRegisterTask", AssembleRegisterTask::class.java){
-                    it.variant = variant.name
-                }
-                variant.artifacts
-                    .forScope(ScopedArtifacts.Scope.ALL)
-                    .use(task)
-                    .toTransform(
-                        ScopedArtifact.CLASSES,
-                        AssembleRegisterTask::allJars,
-                        AssembleRegisterTask::allDirectories,
-                        AssembleRegisterTask::output
-                    )
             }
-
+        } catch (_: Throwable) {
         }
     }
 
