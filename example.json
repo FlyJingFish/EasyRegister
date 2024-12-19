@@ -2,6 +2,7 @@
   {
     "wovenClass": "注入的类名",
     "wovenMethod": "注入的方法名包括参数类型和返回类型",
+    "createWovenClass": false,
     "searchClass": {
       "regex": "正则表达式",
       "extendsClass": "继承的类名",
