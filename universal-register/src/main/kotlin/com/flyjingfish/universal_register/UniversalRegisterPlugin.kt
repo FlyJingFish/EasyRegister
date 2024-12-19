@@ -17,8 +17,10 @@ class UniversalRegisterPlugin : Plugin<Project> {
         }
 
         val mode = project.properties[RootStringConfig.MODE.propertyName]?.toString()?:RootStringConfig.MODE.defaultValue
-        RegisterClassUtils.mode = mode.ifEmpty {
+        RegisterClassUtils.mode = if (mode !in RootStringConfig.MODE_SET){
             RootStringConfig.MODE.defaultValue
+        }else{
+            mode
         }
         InitPlugin.rootPluginDeepApply(project)
         InitPlugin.initFromFile(project)

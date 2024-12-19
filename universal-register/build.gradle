@@ -5,8 +5,8 @@ plugins {
     id 'com.gradle.plugin-publish' version '1.2.1'
 }
 javadoc {
-    title = "AndroidAop Plugin ${version} API"
-    options.bottom = 'AndroidAop'
+    title = "UniversalRegister Plugin ${version} API"
+    options.bottom = 'UniversalRegister'
 }
 apply from: "$rootDir/gradle/java_base.gradle"
 apply from: "$rootDir/gradle/java_publish.gradle"
@@ -26,17 +26,17 @@ gradlePlugin {
     website = PROJ_WEBSITEURL
     vcsUrl = PROJ_VCSURL
     plugins {
-        androidAop {
+        UniversalRegister {
             // 插件id
             id = 'io.github.FlyJingFish.UniversalRegister'
             // 插件全路径
-            implementationClass = "com.flyjingfish.android_aop_plugin.AndroidAopPlugin"
+            implementationClass = "com.flyjingfish.universal_register.UniversalRegister"
             // 插件名称
-            displayName = 'AndroidAOP Plugin'
+            displayName = 'UniversalRegister Plugin'
             //描述
             description = PROJ_DESCRIPTION
             //标签
-            tags.addAll('AndroidAop', 'FlyJingFish', 'android', 'aop')
+            tags.addAll('UniversalRegister', 'FlyJingFish', 'android', 'aop')
         }
     }
 }
