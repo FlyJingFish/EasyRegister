@@ -28,9 +28,9 @@ gradlePlugin {
     plugins {
         EasyRegister {
             // 插件id
-            id = 'io.github.FlyJingFish.EasyRegister'
+            id = 'io.github.flyjingfish.easyRegister'
             // 插件全路径
-            implementationClass = "com.flyjingfish.universal_register.EasyRegister"
+            implementationClass = "io.github.flyjingfish.easy_register.EasyRegisterPlugin"
             // 插件名称
             displayName = 'EasyRegister Plugin'
             //描述
