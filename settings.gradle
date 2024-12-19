@@ -24,6 +24,6 @@ dependencyResolutionManagement {
     }
 
 }
-rootProject.name = "UniversalRegister"
+rootProject.name = "EasyRegister"
 include ':app'
-include ':universal-register'
+include ':easy-register'

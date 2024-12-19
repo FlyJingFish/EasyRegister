@@ -14,8 +14,8 @@
 </p>
 
 <p align="center">
-  <a href="https://central.sonatype.com/search?q=io.github.FlyJingFish.AndroidAop"><img
-    src="https://img.shields.io/maven-central/v/io.github.FlyJingFish.AndroidAop/android-aop-plugin"
+  <a href="https://central.sonatype.com/search?q=io.github.flyjingfish.AndroidAop"><img
+    src="https://img.shields.io/maven-central/v/io.github.flyjingfish.AndroidAop/android-aop-plugin"
     alt="Build"
   /></a>
   <a href="https://github.com/FlyJingFish/AndroidAop/stargazers"><img
