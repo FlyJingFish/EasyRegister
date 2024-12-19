@@ -2,6 +2,7 @@
   {
     "wovenClass": "a.TheRouterServiceProvideInjecter",
     "wovenMethod": "void addFlowTask(android.content.Context,com.therouter.flow.Digraph)",
+    "createWovenClass": false,
     "searchClass": {
       "regex": "^a.ServiceProvider__TheRouter__[^$]+$",
       "extendsClass": "",
@@ -16,6 +17,7 @@
   {
     "wovenClass": "a.TheRouterServiceProvideInjecter",
     "wovenMethod": "void autowiredInject(Object)",
+    "createWovenClass": false,
     "searchClass": {
       "regex": "^[^$]+__TheRouter__Autowired$",
       "extendsClass": "",
@@ -30,6 +32,7 @@
   {
     "wovenClass": "a.TheRouterServiceProvideInjecter",
     "wovenMethod": "void initDefaultRouteMap()",
+    "createWovenClass": false,
     "searchClass": {
       "regex": "^a.RouterMap__TheRouter__[^$]+$",
       "extendsClass": "",
@@ -44,6 +47,7 @@
   {
     "wovenClass": "a.TheRouterServiceProvideInjecter",
     "wovenMethod": "void trojan()",
+    "createWovenClass": false,
     "searchClass": {
       "regex": "^a.ServiceProvider__TheRouter__[^$]+$",
       "extendsClass": "",

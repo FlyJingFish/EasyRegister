@@ -2,6 +2,7 @@
   {
     "wovenClass": "com.wyjson.router.core.RouteModuleCenter",
     "wovenMethod": "void loadByPlugin()",
+    "createWovenClass": false,
     "searchClass": {
       "regex": "^com.wyjson.router.module.route.[^$]+\\$\\$Route$",
       "extendsClass": "",
@@ -16,6 +17,7 @@
   {
     "wovenClass": "com.wyjson.router.core.ApplicationModuleCenter",
     "wovenMethod": "void loadByPlugin()",
+    "createWovenClass": false,
     "searchClass": {
       "regex": "^com.wyjson.router.module.application.[^$]+\\$\\$[^$]+\\$\\$AP$",
       "extendsClass": "",
