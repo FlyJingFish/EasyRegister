@@ -2,6 +2,7 @@ package com.flyjingfish.universal_register.utils
 
 import com.flyjingfish.universal_register.bean.WovenClass
 import com.flyjingfish.universal_register.plugin.CompileRegisterTask
+import com.flyjingfish.universal_register.visitor.RegisterClassVisitor
 import com.flyjingfish.universal_register.visitor.SearchClassScanner
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +75,54 @@ object ScannerUtils {
             val job = async(Dispatchers.IO) {
                 val method = Method.getMethod(wovenClass.wovenMethod)
                 val searchClass = wovenClass.searchClass
-                val className = dotToSlash(wovenClass.wovenClass) +"\$Woven"+(method.name+method.descriptor).computeMD5()
+                if (wovenClass.createWovenClass){
+                    val className = dotToSlash(wovenClass.wovenClass)
+                    //新建一个类生成器，COMPUTE_FRAMES，COMPUTE_MAXS这2个参数能够让asm自动更新操作数栈
+                    val cw = ClassWriter(ClassWriter.COMPUTE_FRAMES or ClassWriter.COMPUTE_MAXS)
+                    //生成一个public的类，类路径是com.study.Human
+                    cw.visit(
+                        Opcodes.V1_8,
+                        Opcodes.ACC_PUBLIC, dotToSlash(className), null, "java/lang/Object", null)
+
+                    //生成默认的构造方法： public Human()
+                    var mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null)
+                    mv.visitVarInsn(Opcodes.ALOAD, 0)
+                    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false)
+                    mv.visitInsn(Opcodes.RETURN)
+                    mv.visitMaxs(0, 0) //更新操作数栈
+                    mv.visitEnd() //一定要有visitEnd
+
+
+                    //生成静态方法
+                    mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, method.name, method.descriptor, null, null)
+
+                    val argTypes = Type.getArgumentTypes(method.descriptor)
+                    for ((index,_) in argTypes.withIndex()) {
+                        mv.visitVarInsn(Opcodes.ALOAD, index)
+                    }
+                    mv.visitMethodInsn(
+                        AdviceAdapter.INVOKESTATIC,
+                        getWovenClassName(className,method.name, method.descriptor),
+                        RegisterClassVisitor.INVOKE_METHOD,
+                        method.descriptor,
+                        false
+                    )
+
+                    mv.visitInsn(Opcodes.RETURN)
+                    mv.visitMaxs(0,0)
+                    mv.visitEnd()
+                    //设置必要的类路径
+                    val path = output.absolutePath + File.separatorChar + dotToSlash(className).adapterOSPath()+".class"
+                    //获取类的byte数组
+                    val classByteData = cw.toByteArray()
+                    //把类数据写入到class文件,这样你就可以把这个类文件打包供其他的人使用
+                    val outFile = File(path)
+                    outFile.checkExist()
+                    classByteData.saveFile(outFile)
+                }
+
+
+                val className = getWovenClassName(dotToSlash(wovenClass.wovenClass),method.name,method.descriptor)
                 //新建一个类生成器，COMPUTE_FRAMES，COMPUTE_MAXS这2个参数能够让asm自动更新操作数栈
                 val cw = ClassWriter(ClassWriter.COMPUTE_FRAMES or ClassWriter.COMPUTE_MAXS)
                 //生成一个public的类，类路径是com.study.Human

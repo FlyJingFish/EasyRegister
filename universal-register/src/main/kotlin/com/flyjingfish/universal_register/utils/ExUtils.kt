@@ -143,3 +143,7 @@ fun File.getFileClassname(directory :File):String {
 fun String.toClassPath():String {
     return replace(File.separatorChar, '/')
 }
+
+fun getWovenClassName(className:String,methodName:String,methodDesc:String):String{
+    return className+"\$Woven"+(methodName+ methodDesc).computeMD5()
+}

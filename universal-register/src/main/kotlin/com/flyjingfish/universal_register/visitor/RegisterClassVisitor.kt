@@ -2,6 +2,7 @@ package com.flyjingfish.universal_register.visitor
 
 import com.flyjingfish.universal_register.utils.RegisterClassUtils
 import com.flyjingfish.universal_register.utils.computeMD5
+import com.flyjingfish.universal_register.utils.getWovenClassName
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
@@ -52,7 +53,7 @@ class RegisterClassVisitor(cv: ClassVisitor?) : ClassVisitor(Opcodes.ASM9, cv) {
                 }
                 mv.visitMethodInsn(
                     INVOKESTATIC,
-                    className+"\$Woven"+(mName+mDesc).computeMD5(),
+                    getWovenClassName(className,mName, mDesc),
                     INVOKE_METHOD,
                     mDesc,
                     false

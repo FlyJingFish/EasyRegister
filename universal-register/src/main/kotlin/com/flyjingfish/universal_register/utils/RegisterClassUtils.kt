@@ -104,7 +104,9 @@ object RegisterClassUtils {
             searchClasses.clear()
             searchWovenClasses.addAll(searchCls)
             for (searchCl in searchCls) {
-                wovenClasses.add(searchCl.wovenClass)
+                if (!searchCl.createWovenClass){
+                    wovenClasses.add(searchCl.wovenClass)
+                }
                 searchClasses.add(searchCl.searchClass)
             }
         }
@@ -120,7 +122,9 @@ object RegisterClassUtils {
             searchClasses.clear()
             searchWovenClasses.addAll(searchCls)
             for (searchCl in searchCls) {
-                wovenClasses.add(searchCl.wovenClass)
+                if (!searchCl.createWovenClass){
+                    wovenClasses.add(searchCl.wovenClass)
+                }
                 searchClasses.add(searchCl.searchClass)
             }
         }
