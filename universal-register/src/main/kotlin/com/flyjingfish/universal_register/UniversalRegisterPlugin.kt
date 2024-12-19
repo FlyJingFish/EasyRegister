@@ -9,7 +9,7 @@ import org.gradle.api.Project
 class UniversalRegisterPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        val enableStr = project.properties[RootStringConfig.ENABLE.propertyName]?:RootStringConfig.APP_INCREMENTAL.defaultValue
+        val enableStr = project.properties[RootStringConfig.ENABLE.propertyName]?:RootStringConfig.ENABLE.defaultValue
         val enable = enableStr == "true"
         RegisterClassUtils.enable = enable
         if (!enable){
