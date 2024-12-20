@@ -10,11 +10,6 @@ enum class RootStringConfig(
     ENABLE("easyRegister.enable", "true"),
 
     /**
-     * 当 easyRegister.mode = debug 或 auto 时，如果当前变体为 debug 时，app 模块是否增量编译（如果是增量，则修改新增类时不能更新注册类的信息）
-     */
-    APP_INCREMENTAL("easyRegister.app.isIncremental", "false"),
-
-    /**
      * 注册模式， 取值范围看 [MODE_SET]
      * debug 是指无论你的当前编译的变体名是什么，都是使用插件的 debug 模式（debug模式是快速模式）
      * release 是指无论你的当前编译的变体名是什么，都是使用插件的 release 模式（release模式是慢速模式）
@@ -31,7 +26,12 @@ enum class RootStringConfig(
     /**
      * 是否已经织入锚点代码
      */
-    ANCHOR("easyRegister.isAnchor", "false");
+    ANCHOR("easyRegister.isAnchor", "false"),
+
+    /**
+     * 当 easyRegister.mode = debug 或 auto 时，如果当前变体为 debug 时，app 模块是否增量编译（如果是增量，则修改新增类时不能更新注册类的信息）
+     */
+    APP_INCREMENTAL("easyRegister.app.isIncremental", "false");
 
     companion object{
         val MODE_SET = setOf("debug","release","auto")

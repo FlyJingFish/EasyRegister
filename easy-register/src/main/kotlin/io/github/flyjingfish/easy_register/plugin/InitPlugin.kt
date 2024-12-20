@@ -16,7 +16,7 @@ import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
 
 object InitPlugin{
-    private fun deepSetDebugMode(project: Project){
+    private fun deepSetAllModuleSearchCode(project: Project){
         val childProjects = project.childProjects
         if (childProjects.isEmpty()){
             return
@@ -24,17 +24,17 @@ object InitPlugin{
         childProjects.forEach { (_,value)->
             value.afterEvaluate {
                 val notApp = !it.plugins.hasPlugin(AppPlugin::class.java)
-                val noneHasAop = !it.plugins.hasPlugin("easy.register")
-                if (notApp && noneHasAop && it.hasProperty("android")){
+                val noneHasPlugin = !it.plugins.hasPlugin("easy.register")
+                if (notApp && noneHasPlugin && it.hasProperty("android")){
                     SearchCodePlugin(true).apply(it)
                 }
             }
-            deepSetDebugMode(value)
+            deepSetAllModuleSearchCode(value)
         }
     }
     fun rootPluginDeepApply(project: Project) {
         if (project.rootProject == project){
-            deepSetDebugMode(project.rootProject)
+            deepSetAllModuleSearchCode(project.rootProject)
         }
         SearchCodePlugin(false).apply(project)
     }
