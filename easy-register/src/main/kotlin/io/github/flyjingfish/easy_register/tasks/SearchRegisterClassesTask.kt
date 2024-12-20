@@ -22,7 +22,7 @@ class SearchRegisterClassesTask(
     }
 
     fun taskAction() {
-        println("easy-register:debug search code start java=$isJava")
+        println("easy-register:debug search code start")
         val scanTimeCost = measureTimeMillis {
             scanFile()
         }
