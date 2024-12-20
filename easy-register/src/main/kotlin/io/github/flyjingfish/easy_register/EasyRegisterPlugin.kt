@@ -3,6 +3,7 @@ package io.github.flyjingfish.easy_register
 import io.github.flyjingfish.easy_register.config.RootStringConfig
 import io.github.flyjingfish.easy_register.plugin.InitPlugin
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
+import io.github.flyjingfish.easy_register.utils.printLog
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -22,8 +23,17 @@ class EasyRegisterPlugin : Plugin<Project> {
         }else{
             mode
         }
+        printLog("RegisterClassUtils.mode = ${RegisterClassUtils.mode}")
         InitPlugin.rootPluginDeepApply(project)
         InitPlugin.initFromFile(project)
-        InitPlugin.registerApp(project)
+
+
+        val isAnchorStr = project.properties[RootStringConfig.ANCHOR.propertyName]?: RootStringConfig.ANCHOR.defaultValue
+        val isAnchor = isAnchorStr == "true"
+        if (isAnchor){
+            InitPlugin.registerApp(project,true,false)
+        }else{
+            InitPlugin.registerApp(project)
+        }
     }
 }

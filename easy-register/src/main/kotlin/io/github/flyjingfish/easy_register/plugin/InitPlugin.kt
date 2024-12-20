@@ -8,6 +8,7 @@ import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.gradle.AppPlugin
 import io.github.flyjingfish.easy_register.config.RootStringConfig
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
+import io.github.flyjingfish.easy_register.utils.printLog
 import io.github.flyjingfish.easy_register.visitor.MyClassVisitorFactory
 import org.gradle.api.Project
 
@@ -75,6 +76,7 @@ object InitPlugin{
                 val buildTypeName = variant.buildType
                 val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variant.name)
                 try {
+                    printLog("RegisterClassUtils.mode = ${RegisterClassUtils.mode},debugMode=$debugMode")
                     if (debugMode){
                         variant.instrumentation.transformClassesWith(
                             MyClassVisitorFactory::class.java,

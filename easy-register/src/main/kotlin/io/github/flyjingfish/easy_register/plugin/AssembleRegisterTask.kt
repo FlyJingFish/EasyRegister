@@ -137,27 +137,30 @@ abstract class AssembleRegisterTask : DefaultTask() {
     private fun wovenIntoCode() = runBlocking{
 
         fun processFile(file : File,directory:File){
-            val relativePath = file.getRelativePath(directory)
-            val jarEntryName: String = relativePath.toClassPath()
+            if (file.isFile) {
+                val relativePath = file.getRelativePath(directory)
+                val jarEntryName: String = relativePath.toClassPath()
 
-            if (isInstrumentable(jarEntryName)){
-                FileInputStream(file).use { inputs ->
-                    val cr = ClassReader(inputs)
-                    val cw = ClassWriter(cr,0)
-                    cr.accept(
-                        RegisterClassVisitor(cw),
-                        0
-                    )
-                    cw.toByteArray().inputStream().use {
+                if (isInstrumentable(jarEntryName)){
+                    FileInputStream(file).use { inputs ->
+                        val cr = ClassReader(inputs)
+                        val cw = ClassWriter(cr,0)
+                        cr.accept(
+                            RegisterClassVisitor(cw),
+                            0
+                        )
+                        cw.toByteArray().inputStream().use {
+                            jarOutput.saveEntry(jarEntryName,it)
+                        }
+                    }
+
+                }else{
+                    file.inputStream().use {
                         jarOutput.saveEntry(jarEntryName,it)
                     }
                 }
-
-            }else{
-                file.inputStream().use {
-                    jarOutput.saveEntry(jarEntryName,it)
-                }
             }
+
         }
         val wovenCodeFileJobs1 = mutableListOf<Deferred<Unit>>()
         for (directory in ignoreJarClassPaths) {
@@ -241,7 +244,7 @@ abstract class AssembleRegisterTask : DefaultTask() {
 
     private fun isInstrumentable(className: String): Boolean {
         // 指定哪些类可以被修改，例如过滤某些包名
-        return RegisterClassUtils.isWovenClass(slashToDot(className))
+        return RegisterClassUtils.isWovenClass(slashToDot(className).replace(Regex("\\.class$"), ""))
     }
 
     private  fun JarOutputStream.saveEntry(entryName: String, inputStream: InputStream) {

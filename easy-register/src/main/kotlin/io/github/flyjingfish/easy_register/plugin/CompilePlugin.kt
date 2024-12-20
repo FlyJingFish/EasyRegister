@@ -10,6 +10,7 @@ import io.github.flyjingfish.easy_register.utils.AndroidConfig
 import io.github.flyjingfish.easy_register.utils.JsonUtils
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
 import io.github.flyjingfish.easy_register.utils.adapterOSPath
+import io.github.flyjingfish.easy_register.utils.printLog
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -58,18 +59,28 @@ class CompilePlugin(private val root:Boolean): Plugin<Project> {
                 } else {
                     variant.javaCompile as AbstractCompile
                 }
+            val variantName = variant.name
+            val buildTypeName = variant.buildType.name
             if (isApp){
                 val isIncrementalStr = project.properties[RootStringConfig.APP_INCREMENTAL.propertyName]?: RootStringConfig.APP_INCREMENTAL.defaultValue
                 val isIncremental = isIncrementalStr == "true"
                 if (!isIncremental){
-                    javaCompile.outputs.upToDateWhen { return@upToDateWhen false }
+                    val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
+                    if (debugMode){
+                        javaCompile.outputs.upToDateWhen {
+                            printLog("RegisterClassUtils.mode2 = ${RegisterClassUtils.mode},debugMode=$debugMode")
+                            return@upToDateWhen false }
+                    }
                 }
             }
 
-            val variantName = variant.name
-            val buildTypeName = variant.buildType.name
+
             javaCompile.doFirst{
-                JsonUtils.deleteNeedDelWovenFile(project, variantName)
+                val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
+                printLog("RegisterClassUtils.mode1 = ${RegisterClassUtils.mode},debugMode=$debugMode")
+                if (debugMode){
+                    JsonUtils.deleteNeedDelWovenFile(project, variantName)
+                }
             }
             javaCompile.doLast{
 
@@ -93,7 +104,9 @@ class CompilePlugin(private val root:Boolean): Plugin<Project> {
 
     private fun doAopTask(project: Project, isApp:Boolean, variantName: String, buildTypeName: String,
                           javaCompile:AbstractCompile, kotlinPath: File, isAndroidModule : Boolean = true){
+
         val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
+        printLog("RegisterClassUtils.mode = ${RegisterClassUtils.mode},debugMode=$debugMode")
         if (!debugMode){
             return
         }

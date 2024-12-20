@@ -26,7 +26,12 @@ enum class RootStringConfig(
     /**
      * 配置文件，文件放置于 gradle.properties 同级目录
      */
-    CONFIG_JSON("easyRegister.configJson", "");
+    CONFIG_JSON("easyRegister.configJson", ""),
+
+    /**
+     * 是否已经织入锚点代码
+     */
+    ANCHOR("easyRegister.isAnchor", "false");
 
     companion object{
         val MODE_SET = setOf("debug","release","auto")
