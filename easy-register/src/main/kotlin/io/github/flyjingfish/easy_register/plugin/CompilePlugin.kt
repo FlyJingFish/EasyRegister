@@ -67,9 +67,7 @@ class CompilePlugin(private val root:Boolean): Plugin<Project> {
                 if (!isIncremental){
                     val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
                     if (debugMode){
-                        javaCompile.outputs.upToDateWhen {
-                            printLog("RegisterClassUtils.mode2 = ${RegisterClassUtils.mode},debugMode=$debugMode")
-                            return@upToDateWhen false }
+                        javaCompile.outputs.upToDateWhen { return@upToDateWhen false }
                     }
                 }
             }
@@ -77,7 +75,6 @@ class CompilePlugin(private val root:Boolean): Plugin<Project> {
 
             javaCompile.doFirst{
                 val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
-                printLog("RegisterClassUtils.mode1 = ${RegisterClassUtils.mode},debugMode=$debugMode")
                 if (debugMode){
                     JsonUtils.deleteNeedDelWovenFile(project, variantName)
                 }
@@ -106,7 +103,6 @@ class CompilePlugin(private val root:Boolean): Plugin<Project> {
                           javaCompile:AbstractCompile, kotlinPath: File, isAndroidModule : Boolean = true){
 
         val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
-        printLog("RegisterClassUtils.mode = ${RegisterClassUtils.mode},debugMode=$debugMode")
         if (!debugMode){
             return
         }

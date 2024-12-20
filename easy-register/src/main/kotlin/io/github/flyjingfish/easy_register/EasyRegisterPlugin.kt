@@ -23,7 +23,6 @@ class EasyRegisterPlugin : Plugin<Project> {
         }else{
             mode
         }
-        printLog("RegisterClassUtils.mode = ${RegisterClassUtils.mode}")
         InitPlugin.rootPluginDeepApply(project)
         InitPlugin.initFromFile(project)
 

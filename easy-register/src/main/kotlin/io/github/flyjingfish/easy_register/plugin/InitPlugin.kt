@@ -76,7 +76,6 @@ object InitPlugin{
                 val buildTypeName = variant.buildType
                 val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variant.name)
                 try {
-                    printLog("RegisterClassUtils.mode = ${RegisterClassUtils.mode},debugMode=$debugMode")
                     if (debugMode){
                         variant.instrumentation.transformClassesWith(
                             MyClassVisitorFactory::class.java,
