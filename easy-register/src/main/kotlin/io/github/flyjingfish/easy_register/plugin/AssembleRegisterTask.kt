@@ -58,13 +58,13 @@ abstract class AssembleRegisterTask : DefaultTask() {
     private val ignoreJarClassPaths = mutableListOf<File>()
     @TaskAction
     fun taskAction() {
-        println("easy-register search code start")
+        println("easy-register:release search code start")
         jarOutput = JarOutputStream(BufferedOutputStream(FileOutputStream(output.get().asFile)))
         val scanTimeCost = measureTimeMillis {
             scanFile()
         }
         jarOutput.close()
-        println("easy-register search code finish, current cost time ${scanTimeCost}ms")
+        println("easy-register:release search code finish, current cost time ${scanTimeCost}ms")
 
     }
 

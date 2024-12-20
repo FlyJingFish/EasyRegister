@@ -31,13 +31,12 @@ class CompileRegisterTask(
 
     }
 
-    private lateinit var logger: Logger
     fun taskAction() {
-        println("easy-register search code start")
+        println("easy-register:debug search code start")
         val scanTimeCost = measureTimeMillis {
             scanFile()
         }
-        println("easy-register search code finish, current cost time ${scanTimeCost}ms")
+        println("easy-register:debug search code finish, current cost time ${scanTimeCost}ms")
 
     }
 
