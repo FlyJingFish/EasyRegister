@@ -1,4 +1,4 @@
-package com.flyjingfish.androidaop
+package com.flyjingfish.easy_register
 
 import org.junit.Test
 

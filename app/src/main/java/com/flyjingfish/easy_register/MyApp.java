@@ -1,17 +1,15 @@
-package com.flyjingfish.androidaop;
+package com.flyjingfish.easy_register;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.Build;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
 
 import com.flyjingfish.android_aop_annotation.ProceedJoinPoint;
 import com.flyjingfish.android_aop_core.annotations.CustomIntercept;

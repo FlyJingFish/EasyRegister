@@ -5,10 +5,10 @@ plugins {
 }
 
 android {
-    namespace 'com.flyjingfish.androidaop'
+    namespace 'com.flyjingfish.easy_register'
     compileSdk 33
     defaultConfig {
-        applicationId "com.flyjingfish.androidaop"
+        applicationId "com.flyjingfish.easy_register"
         targetSdk 33
         versionCode 1
         versionName "1.0"
