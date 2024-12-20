@@ -24,7 +24,7 @@ object InitPlugin{
         childProjects.forEach { (_,value)->
             value.afterEvaluate {
                 val notApp = !it.plugins.hasPlugin(AppPlugin::class.java)
-                val noneHasAop = !it.plugins.hasPlugin("universal.router")
+                val noneHasAop = !it.plugins.hasPlugin("easy.register")
                 if (notApp && noneHasAop && it.hasProperty("android")){
                     SearchCodePlugin(true).apply(it)
                 }
