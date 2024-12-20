@@ -98,6 +98,7 @@ object InitPlugin{
                         }
                         taskProvider.configure {
                             it.dependsOn("compile${variant.name.capitalized()}JavaWithJavac")
+                            it.outputs.upToDateWhen { return@upToDateWhen false }
                         }
                         variant.artifacts
                             .forScope(ScopedArtifacts.Scope.PROJECT)
