@@ -1,7 +1,7 @@
 package io.github.flyjingfish.easy_register.utils
 
 import io.github.flyjingfish.easy_register.bean.WovenClass
-import io.github.flyjingfish.easy_register.plugin.CompileRegisterTask
+import io.github.flyjingfish.easy_register.tasks.SearchRegisterClassesTask
 import io.github.flyjingfish.easy_register.visitor.RegisterClassVisitor
 import io.github.flyjingfish.easy_register.visitor.SearchClassScanner
 import kotlinx.coroutines.Deferred
@@ -20,10 +20,10 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.jar.JarFile
 
-object ScannerUtils {
+object AsmUtils {
     fun processFileForConfig(project: Project, file: File) {
         if (file.isFile) {
-            if (file.absolutePath.endsWith(CompileRegisterTask._CLASS)) {
+            if (file.absolutePath.endsWith(SearchRegisterClassesTask._CLASS)) {
                 FileInputStream(file).use { inputs ->
                     val bytes = inputs.readAllBytes()
                     if (bytes.isNotEmpty()) {
@@ -49,7 +49,7 @@ object ScannerUtils {
                 if (jarEntry.isDirectory || jarEntry.name.isEmpty()) {
                     continue
                 }
-                if (entryName.endsWith(CompileRegisterTask._CLASS)) {
+                if (entryName.endsWith(SearchRegisterClassesTask._CLASS)) {
                     jarFile.getInputStream(jarEntry).use { inputs ->
                         val bytes = inputs.readAllBytes()
                         if (bytes.isNotEmpty()) {
@@ -360,4 +360,6 @@ object ScannerUtils {
         wovenCodeJobs.awaitAll()
 
     }
+
+
 }

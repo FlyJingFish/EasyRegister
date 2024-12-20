@@ -1,4 +1,4 @@
-package io.github.flyjingfish.easy_register.plugin
+package io.github.flyjingfish.easy_register.tasks
 
 import io.github.flyjingfish.easy_register.utils.hintCleanFile
 import org.gradle.api.DefaultTask

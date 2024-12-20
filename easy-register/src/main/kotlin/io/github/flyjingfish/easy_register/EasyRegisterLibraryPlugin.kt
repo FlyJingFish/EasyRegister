@@ -5,9 +5,8 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.DynamicFeaturePlugin
 import com.android.build.gradle.LibraryExtension
-import io.github.flyjingfish.easy_register.plugin.CompilePlugin
-import io.github.flyjingfish.easy_register.plugin.CompileRegisterLibraryTask
-import io.github.flyjingfish.easy_register.utils.AndroidConfig
+import io.github.flyjingfish.easy_register.plugin.SearchCodePlugin
+import io.github.flyjingfish.easy_register.tasks.AnchorRegisterLibraryTask
 import io.github.flyjingfish.easy_register.utils.JsonUtils
 import io.github.flyjingfish.easy_register.utils.adapterOSPath
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
@@ -26,7 +25,7 @@ class EasyRegisterLibraryPlugin : Plugin<Project> {
 
 
         val isDynamicLibrary = project.plugins.hasPlugin(DynamicFeaturePlugin::class.java)
-        val androidObject: Any = project.extensions.findByName(CompilePlugin.ANDROID_EXTENSION_NAME) ?: return
+        val androidObject: Any = project.extensions.findByName(SearchCodePlugin.ANDROID_EXTENSION_NAME) ?: return
 
 
         val kotlinCompileFilePathMap = mutableMapOf<String, KotlinCompileTool>()
@@ -72,7 +71,7 @@ class EasyRegisterLibraryPlugin : Plugin<Project> {
     }
 
     private fun doAopTask(project: Project, isApp:Boolean, variantName: String, buildTypeName: String,
-                          javaCompile:AbstractCompile, kotlinPath: File, isAndroidModule : Boolean = true){
+                          javaCompile:AbstractCompile, kotlinPath: File){
         val localInput = mutableListOf<File>()
         val javaPath = File(javaCompile.destinationDirectory.asFile.orNull.toString())
         if (javaPath.exists()){
@@ -84,13 +83,6 @@ class EasyRegisterLibraryPlugin : Plugin<Project> {
         }
         val jarInput = mutableListOf<File>()
         val bootJarPath = mutableSetOf<String>()
-        if (isAndroidModule){
-            val androidConfig = AndroidConfig(project)
-            val list: List<File> = androidConfig.getBootClasspath()
-            for (file in list) {
-                bootJarPath.add(file.absolutePath)
-            }
-        }
         for (file in localInput) {
             bootJarPath.add(file.absolutePath)
         }
@@ -105,7 +97,7 @@ class EasyRegisterLibraryPlugin : Plugin<Project> {
         }
         if (localInput.isNotEmpty()){
             val output = File(javaCompile.destinationDirectory.asFile.orNull.toString())
-            val task = CompileRegisterLibraryTask(jarInput,localInput,output,project,isApp,
+            val task = AnchorRegisterLibraryTask(jarInput,localInput,output,project,isApp,
                 variantName
             )
             task.taskAction()

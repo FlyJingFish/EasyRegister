@@ -1,7 +1,7 @@
-package io.github.flyjingfish.easy_register.plugin
+package io.github.flyjingfish.easy_register.tasks
 
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
-import io.github.flyjingfish.easy_register.utils.ScannerUtils
+import io.github.flyjingfish.easy_register.utils.AsmUtils
 import io.github.flyjingfish.easy_register.utils.computeMD5
 import io.github.flyjingfish.easy_register.utils.getFileClassname
 import io.github.flyjingfish.easy_register.utils.getRelativePath
@@ -39,7 +39,7 @@ import java.util.jar.JarOutputStream
 import kotlin.system.measureTimeMillis
 
 
-abstract class AssembleRegisterTask : DefaultTask() {
+abstract class AllClassesTask : DefaultTask() {
 
     @get:Input
     abstract var variant :String
@@ -111,7 +111,7 @@ abstract class AssembleRegisterTask : DefaultTask() {
         }
 
         fun processFile(file : File){
-            ScannerUtils.processFileForConfig(project,file)
+            AsmUtils.processFileForConfig(project,file)
         }
         for (directory in ignoreJarClassPaths) {
             directory.walk().forEach { file ->
@@ -130,7 +130,7 @@ abstract class AssembleRegisterTask : DefaultTask() {
             if (file.asFile.absolutePath in ignoreJar){
                 return@forEach
             }
-            ScannerUtils.processJarForConfig(file.asFile)
+            AsmUtils.processJarForConfig(file.asFile)
         }
     }
 
@@ -143,15 +143,7 @@ abstract class AssembleRegisterTask : DefaultTask() {
 
                 if (isInstrumentable(jarEntryName)){
                     FileInputStream(file).use { inputs ->
-                        val cr = ClassReader(inputs)
-                        val cw = ClassWriter(cr,0)
-                        cr.accept(
-                            RegisterClassVisitor(cw),
-                            0
-                        )
-                        cw.toByteArray().inputStream().use {
-                            jarOutput.saveEntry(jarEntryName,it)
-                        }
+                        saveClasses(inputs,jarEntryName,jarOutput)
                     }
 
                 }else{
@@ -205,15 +197,7 @@ abstract class AssembleRegisterTask : DefaultTask() {
                     try {
                         if (isInstrumentable(entryName)){
                             jarFile.getInputStream(jarEntry).use { inputs ->
-                                val cr = ClassReader(inputs)
-                                val cw = ClassWriter(cr,0)
-                                cr.accept(
-                                    RegisterClassVisitor(cw),
-                                    0
-                                )
-                                cw.toByteArray().inputStream().use {
-                                    jarOutput.saveEntry(entryName,it)
-                                }
+                                saveClasses(inputs,entryName,jarOutput)
                             }
                         }else{
                             jarFile.getInputStream(jarEntry).use {
@@ -231,7 +215,7 @@ abstract class AssembleRegisterTask : DefaultTask() {
             jarFile.close()
         }
         val tmpOtherDir = File(registerCompileTempDir(project,variant))
-        ScannerUtils.createInitClass(tmpOtherDir)
+        AsmUtils.createInitClass(tmpOtherDir)
         for (file in tmpOtherDir.walk()) {
             if (file.isFile) {
                 val className = file.getFileClassname(tmpOtherDir)
@@ -247,8 +231,20 @@ abstract class AssembleRegisterTask : DefaultTask() {
         return RegisterClassUtils.isWovenClass(slashToDot(className).replace(Regex("\\.class$"), ""))
     }
 
-    private  fun JarOutputStream.saveEntry(entryName: String, inputStream: InputStream) {
-        synchronized(this@AssembleRegisterTask){
+    fun saveClasses(inputs: InputStream,jarEntryName:String,jarOutput: JarOutputStream){
+        val cr = ClassReader(inputs)
+        val cw = ClassWriter(cr,0)
+        cr.accept(
+            RegisterClassVisitor(cw),
+            0
+        )
+        cw.toByteArray().inputStream().use {
+            jarOutput.saveEntry(jarEntryName,it)
+        }
+    }
+
+    fun JarOutputStream.saveEntry(entryName: String, inputStream: InputStream) {
+        synchronized(this@AllClassesTask){
             putNextEntry(JarEntry(entryName))
             inputStream.copyTo( this)
             closeEntry()

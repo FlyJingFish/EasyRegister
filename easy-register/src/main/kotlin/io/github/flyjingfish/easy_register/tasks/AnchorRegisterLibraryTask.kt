@@ -1,4 +1,4 @@
-package io.github.flyjingfish.easy_register.plugin
+package io.github.flyjingfish.easy_register.tasks
 
 import io.github.flyjingfish.easy_register.utils.JsonUtils
 import io.github.flyjingfish.easy_register.utils.registerCompileTempDir
@@ -21,7 +21,7 @@ import java.io.File
 import java.io.FileInputStream
 import kotlin.system.measureTimeMillis
 
-class CompileRegisterLibraryTask(
+class AnchorRegisterLibraryTask(
     private val allJars: MutableList<File>,
     private val allDirectories: MutableList<File>,
     private val output: File,

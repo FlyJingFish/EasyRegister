@@ -7,10 +7,13 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.gradle.AppPlugin
 import io.github.flyjingfish.easy_register.config.RootStringConfig
+import io.github.flyjingfish.easy_register.tasks.AddClassesTask
+import io.github.flyjingfish.easy_register.tasks.AllClassesTask
+import io.github.flyjingfish.easy_register.tasks.HintCleanTask
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
-import io.github.flyjingfish.easy_register.utils.printLog
 import io.github.flyjingfish.easy_register.visitor.MyClassVisitorFactory
 import org.gradle.api.Project
+import org.gradle.configurationcache.extensions.capitalized
 
 object InitPlugin{
     private fun deepSetDebugMode(project: Project){
@@ -23,7 +26,7 @@ object InitPlugin{
                 val notApp = !it.plugins.hasPlugin(AppPlugin::class.java)
                 val noneHasAop = !it.plugins.hasPlugin("universal.router")
                 if (notApp && noneHasAop && it.hasProperty("android")){
-                    CompilePlugin(true).apply(it)
+                    SearchCodePlugin(true).apply(it)
                 }
             }
             deepSetDebugMode(value)
@@ -33,7 +36,7 @@ object InitPlugin{
         if (project.rootProject == project){
             deepSetDebugMode(project.rootProject)
         }
-        CompilePlugin(false).apply(project)
+        SearchCodePlugin(false).apply(project)
     }
 
     fun initFromFile(project: Project) {
@@ -88,8 +91,23 @@ object InitPlugin{
                         variant.instrumentation.setAsmFramesComputationMode(
                             FramesComputationMode.COPY_FRAMES
                         )
+
+                        val taskProvider = project.tasks.register("${variant.name}EasyRegisterAddClasses",
+                            AddClassesTask::class.java){
+                            it.variant = variant.name
+                        }
+                        taskProvider.configure {
+                            it.dependsOn("compile${variant.name.capitalized()}JavaWithJavac")
+                        }
+                        variant.artifacts
+                            .forScope(ScopedArtifacts.Scope.PROJECT)
+                            .use(taskProvider)
+                            .toAppend(
+                                ScopedArtifact.CLASSES,
+                                AddClassesTask::output
+                            )
                     }else{
-                        val task = project.tasks.register("${variant.name}AssembleEasyRegisterTask", AssembleRegisterTask::class.java){
+                        val task = project.tasks.register("${variant.name}EasyRegisterAllClasses", AllClassesTask::class.java){
                             it.variant = variant.name
                         }
                         variant.artifacts
@@ -97,9 +115,9 @@ object InitPlugin{
                             .use(task)
                             .toTransform(
                                 ScopedArtifact.CLASSES,
-                                AssembleRegisterTask::allJars,
-                                AssembleRegisterTask::allDirectories,
-                                AssembleRegisterTask::output
+                                AllClassesTask::allJars,
+                                AllClassesTask::allDirectories,
+                                AllClassesTask::output
                             )
                     }
                 } catch (_: Throwable) {
