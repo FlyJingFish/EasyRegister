@@ -16,10 +16,21 @@ object RegisterClassUtils {
     private val searchWovenClasses = mutableListOf<WovenClass>()
     private val searchClasses = mutableListOf<SearchClass>()
     private val wovenClasses = HashSet<String>()
-    fun addClass(moduleName:String,className:String,superClassName:String?){
+    fun addClass(moduleName:String,className:String,superClassName:String?,interfaces: Array<String>?){
         for (searchClass in searchClasses) {
             val matchExtends = if (searchClass.extendsClass.isNotEmpty()){
-                if (searchClass.extendsClass == superClassName){
+                var extends = searchClass.extendsClass == superClassName?.let { slashToDot(it) }
+                if (!extends){
+                    interfaces?.let {
+                        for (s in it) {
+                            if (searchClass.extendsClass == slashToDot(s)){
+                                extends = true
+                                break
+                            }
+                        }
+                    }
+                }
+                if (extends){
                     1
                 }else{
                     2

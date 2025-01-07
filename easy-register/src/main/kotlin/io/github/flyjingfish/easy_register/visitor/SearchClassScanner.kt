@@ -14,6 +14,6 @@ class SearchClassScanner(private val moduleName:String) : ClassVisitor(Opcodes.A
         interfaces: Array<String>?
     ) {
         super.visit(version, access, name, signature, superName, interfaces)
-        RegisterClassUtils.addClass(moduleName,name,superName)
+        RegisterClassUtils.addClass(moduleName,name,superName,interfaces)
     }
 }
