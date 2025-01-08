@@ -111,6 +111,25 @@ plugins {
 
 ```
 
+### 3、配置织入代码
+
+在项目根目录的 `gradle.properties` 中加入以下配置，example.json 放在和 `gradle.properties` 的同级目录下，详细说明可[点此查看](https://github.com/FlyJingFish/EasyRegister/blob/master/example.json)
+
+```properties
+easyRegister.configJson = example.json
+```
+
+其他配置
+
+```properties
+//是否启用本插件
+easyRegister.enable = true
+//启用什么模式 auto 只在debug模式启用优化，debug 是指会一直启用优化，release 是指不启用优化
+easyRegister.mode = auto //auto、debug、release
+```
+
+
+
 ## 使用本库作为自己插件库的类库而不是插件 
 
 ### 1、在 你的核心Android类库 模块引入插件
