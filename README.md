@@ -85,7 +85,7 @@
   ```gradle
   
   plugins {
-      //必须项 👇 apply 设置为 true 自动为所有module“预”配置debugMode，false则按下边步骤五的方式二
+      //必须项 👇 注意 apply 设置必须为 true 
       id "io.github.FlyJingFish.EasyRegister" version "1.0.0" apply true
   }
   ```
