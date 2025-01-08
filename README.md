@@ -87,7 +87,7 @@
   
   plugins {
       //必须项 👇 apply 设置为 true 自动为所有module“预”配置debugMode，false则按下边步骤五的方式二
-      id "io.github.flyjingfish.easyRegister" version "1.0.0" apply true
+      id "io.github.FlyJingFish.EasyRegister" version "1.0.0" apply true
   }
   ```
   
@@ -97,7 +97,7 @@
     buildscript {
         dependencies {
             //必须项 👇
-            classpath 'io.github.FlyJingFish.EasyRegister:easy-register:1.0.0'
+            classpath 'io.github.FlyJingFish.EasyRegister:plugin:1.0.0'
         }
     }
     apply plugin: "easy.register"
@@ -132,7 +132,7 @@ plugins {
 ```gradle
 
 dependencies {
-    implementation 'io.github.FlyJingFish.EasyRegister:easy-register:1.0.0'
+    implementation 'io.github.FlyJingFish.EasyRegister:plugin:1.0.0'
 }
 ```
 
