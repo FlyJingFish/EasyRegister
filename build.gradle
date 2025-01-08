@@ -90,14 +90,9 @@ task aaBumpVersion() {
 def updateREADME(readme,oldVersionName,newVersionName) {
     File configFile = new File(readme)
     String exportText = configFile.text
-    String text = exportText.replace("io.github.FlyJingFish.AndroidAop:android-aop-plugin:"+oldVersionName,"io.github.FlyJingFish.AndroidAop:android-aop-plugin:"+newVersionName)
-    text = text.replace("io.github.FlyJingFish.AndroidAop:android-aop-core:"+oldVersionName,"io.github.FlyJingFish.AndroidAop:android-aop-core:"+newVersionName)
-    text = text.replace("io.github.FlyJingFish.AndroidAop:android-aop-annotation:"+oldVersionName,"io.github.FlyJingFish.AndroidAop:android-aop-annotation:"+newVersionName)
-    text = text.replace("io.github.FlyJingFish.AndroidAop:android-aop-extra:"+oldVersionName,"io.github.FlyJingFish.AndroidAop:android-aop-extra:"+newVersionName)
-    text = text.replace("io.github.FlyJingFish.AndroidAop:android-aop-processor:"+oldVersionName,"io.github.FlyJingFish.AndroidAop:android-aop-processor:"+newVersionName)
-    text = text.replace("io.github.FlyJingFish.AndroidAop:android-aop-ksp:"+oldVersionName,"io.github.FlyJingFish.AndroidAop:android-aop-ksp:"+newVersionName)
-    text = text.replace("id \"io.github.FlyJingFish.AndroidAop.android-aop\" version \""+oldVersionName+"\"","id \"io.github.FlyJingFish.AndroidAop.android-aop\" version \""+newVersionName+"\"")
-    text = text.replace("id(\"io.github.FlyJingFish.AndroidAop.android-aop\") version \""+oldVersionName+"\"","id(\"io.github.FlyJingFish.AndroidAop.android-aop\") version \""+newVersionName+"\"")
+    String text = exportText.replace("io.github.FlyJingFish.EasyRegister:plugin:"+oldVersionName,"io.github.FlyJingFish.EasyRegister:plugin:"+newVersionName)
+    text = text.replace("id \"io.github.FlyJingFish.EasyRegister\" version \""+oldVersionName+"\"","id \"io.github.FlyJingFish.EasyRegister\" version \""+newVersionName+"\"")
+    text = text.replace("id(\"io.github.FlyJingFish.EasyRegister\") version \""+oldVersionName+"\"","id(\"io.github.FlyJingFish.EasyRegister\") version \""+newVersionName+"\"")
     configFile.write(text)
 }
 
