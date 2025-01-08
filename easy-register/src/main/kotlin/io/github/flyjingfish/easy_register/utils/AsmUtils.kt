@@ -80,14 +80,11 @@ object AsmUtils {
 
                 if (wovenClass.createWovenClass){
                     val className = dotToSlash(wovenClass.wovenClass)
-                    //新建一个类生成器，COMPUTE_FRAMES，COMPUTE_MAXS这2个参数能够让asm自动更新操作数栈
                     val cw = ClassWriter(ClassWriter.COMPUTE_FRAMES or ClassWriter.COMPUTE_MAXS)
-                    //生成一个public的类，类路径是com.study.Human
                     cw.visit(
                         Opcodes.V1_8,
                         Opcodes.ACC_PUBLIC, dotToSlash(className), null, "java/lang/Object", null)
 
-                    //生成默认的构造方法： public Human()
                     var mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null)
                     mv.visitVarInsn(Opcodes.ALOAD, 0)
                     mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false)
@@ -96,7 +93,6 @@ object AsmUtils {
                     mv.visitEnd() //一定要有visitEnd
 
 
-                    //生成静态方法
                     mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, method.name, method.descriptor, null, null)
 
                     val argTypes = Type.getArgumentTypes(method.descriptor)
@@ -114,11 +110,8 @@ object AsmUtils {
                     mv.visitInsn(Opcodes.RETURN)
                     mv.visitMaxs(0,0)
                     mv.visitEnd()
-                    //设置必要的类路径
                     val path = output.absolutePath + File.separatorChar + dotToSlash(className).adapterOSPath()+".class"
-                    //获取类的byte数组
                     val classByteData = cw.toByteArray()
-                    //把类数据写入到class文件,这样你就可以把这个类文件打包供其他的人使用
                     val outFile = File(path)
                     outFile.checkExist()
                     classByteData.saveFile(outFile)
@@ -129,7 +122,6 @@ object AsmUtils {
                 val outFile = File(path)
                 val argTypes = Type.getArgumentTypes(method.descriptor)
                 fun addCode(mv:MethodVisitor){
-                    //生成静态方法中的字节码指令
                     val set = searchClass.getClassNames()
                     if (set.isNotEmpty()) {
                         for (routeModuleClassName in set) {
@@ -372,14 +364,11 @@ object AsmUtils {
                     }
 
                 }
-                //新建一个类生成器，COMPUTE_FRAMES，COMPUTE_MAXS这2个参数能够让asm自动更新操作数栈
                 val cw = ClassWriter(ClassWriter.COMPUTE_FRAMES or ClassWriter.COMPUTE_MAXS)
-                //生成一个public的类，类路径是com.study.Human
                 cw.visit(
                     Opcodes.V1_8,
                     Opcodes.ACC_PUBLIC, dotToSlash(className), null, "java/lang/Object", null)
 
-                //生成默认的构造方法： public Human()
                 var mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null)
                 mv.visitVarInsn(Opcodes.ALOAD, 0)
                 mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false)
@@ -388,7 +377,6 @@ object AsmUtils {
                 mv.visitEnd() //一定要有visitEnd
 
 
-                //生成静态方法
                 mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "init", method.descriptor, null, null)
                 mv.visitCode()
                 addCode(mv)
@@ -396,11 +384,8 @@ object AsmUtils {
                 mv.visitInsn(Opcodes.RETURN)
                 mv.visitMaxs(argTypes.size, argTypes.size+1)
                 mv.visitEnd()
-                //设置必要的类路径
 
-                //获取类的byte数组
                 val classByteData = cw.toByteArray()
-                //把类数据写入到class文件,这样你就可以把这个类文件打包供其他的人使用
 
                 outFile.checkExist()
                 classByteData.saveFile(outFile)

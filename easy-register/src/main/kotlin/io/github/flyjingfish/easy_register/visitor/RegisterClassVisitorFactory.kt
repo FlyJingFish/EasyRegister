@@ -14,7 +14,6 @@ abstract class MyClassVisitorFactory : AsmClassVisitorFactory<MyParameters> {
         classContext: ClassContext,
         nextVisitor: ClassVisitor
     ): ClassVisitor {
-        // 创建自定义的 ClassVisitor
         return RegisterClassVisitor(nextVisitor)
     }
 
@@ -24,7 +23,6 @@ abstract class MyClassVisitorFactory : AsmClassVisitorFactory<MyParameters> {
     }
 }
 
-// 自定义参数，用于传递配置
 interface MyParameters : InstrumentationParameters {
     @get:Input
     val myConfig: Property<String>

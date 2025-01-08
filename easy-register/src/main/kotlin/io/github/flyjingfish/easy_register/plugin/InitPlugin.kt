@@ -87,7 +87,6 @@ object InitPlugin{
                             params.myConfig.set("My custom config")
                         }
 
-                        // 指定字节码修改生效
                         variant.instrumentation.setAsmFramesComputationMode(
                             FramesComputationMode.COPY_FRAMES
                         )
