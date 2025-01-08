@@ -32,6 +32,9 @@ abstract class AddClassesTask : DefaultTask() {
 
     private fun addClass() = runBlocking {
         val tmpOtherDir = File(registerCompileTempDir(project,variant))
+        if (tmpOtherDir.exists()){
+            tmpOtherDir.deleteRecursively()
+        }
         AsmUtils.createInitClass(tmpOtherDir)
         val wovenCodeJobs = mutableListOf<Deferred<Unit>>()
         val needDeleteFiles = mutableListOf<String>()

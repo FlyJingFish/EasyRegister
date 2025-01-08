@@ -22,7 +22,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/app_logo"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AndroidAOP"
+        android:theme="@style/Theme.EasyRegister"
         tools:targetApi="31">
         <activity android:name=".MainActivity"
             android:exported="true">
