@@ -26,7 +26,7 @@
     alt="Docker Pulls"
   /></a>
   <a href="https://github.com/FlyJingFish/EasyRegister/blob/master/LICENSE"><img
-    src="https://img.shields.io/github/license/EasyRegister.svg"
+    src="https://img.shields.io/github/license/FlyJingFish/EasyRegister.svg"
     alt="Sponsors"
   /></a>
 </p>
