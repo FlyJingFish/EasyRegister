@@ -52,6 +52,7 @@
 
 4、两种埋入锚点的方式相较于 AGP8 均可得到速度提升
 
+5、本框架提供了市面上几个 Router 库的插件配置 json ，可快速使用[位于此处](https://github.com/FlyJingFish/EasyRegister/tree/master/routerJson)
 
 ### 版本限制
 
