@@ -144,8 +144,8 @@ dependencies {
 
 
 <div>
-<img src="https://github.com/FlyJingFish/EasyRegister/blob/master/docs/screenshot/IMG_4075.PNG" width="280" height="350">
-<img src="https://github.com/FlyJingFish/EasyRegister/blob/master/docs/screenshot/IMG_4076.JPG" width="280" height="350">
+<img src="https://github.com/FlyJingFish/EasyRegister/blob/master/screenshot/IMG_4075.PNG" width="280" height="350">
+<img src="https://github.com/FlyJingFish/EasyRegister/blob/master/screenshot/IMG_4076.JPG" width="280" height="350">
 </div>
 
 
