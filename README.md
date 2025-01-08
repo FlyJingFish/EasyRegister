@@ -32,11 +32,6 @@
 </p>
 
 
-# README.md
-
-
-- en [English](https://github.com/FlyJingFish/EasyRegister/blob/master/README_EN.md)&emsp;
-- zh_CN [简体中文](https://github.com/FlyJingFish/EasyRegister/blob/master/README.md)&emsp;
 
 # 简述
 
