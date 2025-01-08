@@ -4,6 +4,7 @@ import io.github.flyjingfish.easy_register.utils.JsonUtils
 import io.github.flyjingfish.easy_register.utils.registerCompileTempDir
 import io.github.flyjingfish.easy_register.utils.checkExist
 import io.github.flyjingfish.easy_register.utils.getRelativePath
+import io.github.flyjingfish.easy_register.utils.printLog
 import io.github.flyjingfish.easy_register.utils.registerCompileTempJson
 import io.github.flyjingfish.easy_register.utils.saveEntry
 import io.github.flyjingfish.easy_register.utils.saveFile
@@ -36,11 +37,11 @@ class AnchorRegisterLibraryTask(
 
     private lateinit var logger: Logger
     fun taskAction() {
-        println("easy-register-library search code start")
+        printLog("easy-register-library search code start")
         val scanTimeCost = measureTimeMillis {
             scanFile()
         }
-        println("easy-register-library search code finish, current cost time ${scanTimeCost}ms")
+        printLog("easy-register-library search code finish, current cost time ${scanTimeCost}ms")
 
     }
 

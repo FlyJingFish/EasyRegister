@@ -2,6 +2,7 @@ package io.github.flyjingfish.easy_register.tasks
 
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
 import io.github.flyjingfish.easy_register.utils.AsmUtils
+import io.github.flyjingfish.easy_register.utils.printLog
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
 import java.io.File
@@ -22,11 +23,11 @@ class SearchRegisterClassesTask(
     }
 
     fun taskAction() {
-        println("easy-register:debug search code start")
+        printLog("easy-register:debug search code start")
         val scanTimeCost = measureTimeMillis {
             scanFile()
         }
-        println("easy-register:debug search code finish, current cost time ${scanTimeCost}ms")
+        printLog("easy-register:debug search code finish, current cost time ${scanTimeCost}ms")
 
     }
 

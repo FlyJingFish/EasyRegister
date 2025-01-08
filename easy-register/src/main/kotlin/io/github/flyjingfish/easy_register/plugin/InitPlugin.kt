@@ -4,7 +4,9 @@ import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.instrumentation.FramesComputationMode
 import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.ScopedArtifacts
+import com.android.build.api.variant.Variant
 import com.android.build.gradle.AppPlugin
 import io.github.flyjingfish.easy_register.config.RootStringConfig
 import io.github.flyjingfish.easy_register.tasks.AddClassesTask
@@ -68,11 +70,11 @@ object InitPlugin{
             }
         }
         if (registerTransform){
-            registerTransformClassesWith(project,InstrumentationScope.ALL)
+            registerTransformClassesWith(project)
         }
     }
 
-    fun registerTransformClassesWith(project: Project,scope: InstrumentationScope) {
+    fun registerTransformClassesWith(project: Project) {
         try {
             val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
             androidComponents.onVariants { variant ->
@@ -80,45 +82,9 @@ object InitPlugin{
                 val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variant.name)
                 try {
                     if (debugMode){
-                        variant.instrumentation.transformClassesWith(
-                            MyClassVisitorFactory::class.java,
-                            scope
-                        ) { params ->
-                            params.myConfig.set("My custom config")
-                        }
-
-                        variant.instrumentation.setAsmFramesComputationMode(
-                            FramesComputationMode.COPY_FRAMES
-                        )
-
-                        val taskProvider = project.tasks.register("${variant.name}EasyRegisterAddClasses",
-                            AddClassesTask::class.java){
-                            it.variant = variant.name
-                        }
-                        taskProvider.configure {
-                            it.dependsOn("compile${variant.name.capitalized()}JavaWithJavac")
-                            it.outputs.upToDateWhen { return@upToDateWhen false }
-                        }
-                        variant.artifacts
-                            .forScope(ScopedArtifacts.Scope.PROJECT)
-                            .use(taskProvider)
-                            .toAppend(
-                                ScopedArtifact.CLASSES,
-                                AddClassesTask::output
-                            )
+                        transformClassesWith(project,variant)
                     }else{
-                        val task = project.tasks.register("${variant.name}EasyRegisterAllClasses", AllClassesTask::class.java){
-                            it.variant = variant.name
-                        }
-                        variant.artifacts
-                            .forScope(ScopedArtifacts.Scope.ALL)
-                            .use(task)
-                            .toTransform(
-                                ScopedArtifact.CLASSES,
-                                AllClassesTask::allJars,
-                                AllClassesTask::allDirectories,
-                                AllClassesTask::output
-                            )
+                        transform(project,variant)
                     }
                 } catch (_: Throwable) {
                 }
@@ -126,6 +92,50 @@ object InitPlugin{
             }
         } catch (_: Throwable) {
         }
+    }
+
+    fun transform(project: Project,variant: Variant) {
+        val task = project.tasks.register("${variant.name}EasyRegisterAllClasses", AllClassesTask::class.java){
+            it.variant = variant.name
+        }
+        variant.artifacts
+            .forScope(ScopedArtifacts.Scope.ALL)
+            .use(task)
+            .toTransform(
+                ScopedArtifact.CLASSES,
+                AllClassesTask::allJars,
+                AllClassesTask::allDirectories,
+                AllClassesTask::output
+            )
+    }
+
+    fun transformClassesWith(project: Project, variant: Variant) {
+        variant.instrumentation.transformClassesWith(
+            MyClassVisitorFactory::class.java,
+            InstrumentationScope.ALL
+        ) { params ->
+            params.myConfig.set("My custom config")
+        }
+
+        variant.instrumentation.setAsmFramesComputationMode(
+            FramesComputationMode.COPY_FRAMES
+        )
+
+        val taskProvider = project.tasks.register("${variant.name}EasyRegisterAddClasses",
+            AddClassesTask::class.java){
+            it.variant = variant.name
+        }
+        taskProvider.configure {
+            it.dependsOn("compile${variant.name.capitalized()}JavaWithJavac")
+            it.outputs.upToDateWhen { return@upToDateWhen false }
+        }
+        variant.artifacts
+            .forScope(ScopedArtifacts.Scope.PROJECT)
+            .use(taskProvider)
+            .toAppend(
+                ScopedArtifact.CLASSES,
+                AddClassesTask::output
+            )
     }
 
 

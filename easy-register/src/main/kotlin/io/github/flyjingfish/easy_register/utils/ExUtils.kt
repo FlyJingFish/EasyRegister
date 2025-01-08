@@ -102,6 +102,7 @@ fun slashToDot(str: String): String {
 }
 
 fun printLog(text: String) {
+    if (!RegisterClassUtils.log) return
     println(text)
 }
 

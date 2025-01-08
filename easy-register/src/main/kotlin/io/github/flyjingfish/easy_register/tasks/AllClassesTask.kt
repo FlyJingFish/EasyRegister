@@ -7,6 +7,7 @@ import io.github.flyjingfish.easy_register.utils.getFileClassname
 import io.github.flyjingfish.easy_register.utils.getRelativePath
 import io.github.flyjingfish.easy_register.utils.isJarSignatureRelatedFiles
 import io.github.flyjingfish.easy_register.utils.openJar
+import io.github.flyjingfish.easy_register.utils.printLog
 import io.github.flyjingfish.easy_register.utils.registerCompileTempDir
 import io.github.flyjingfish.easy_register.utils.registerTransformIgnoreJarDir
 import io.github.flyjingfish.easy_register.utils.slashToDot
@@ -58,13 +59,13 @@ abstract class AllClassesTask : DefaultTask() {
     private val ignoreJarClassPaths = mutableListOf<File>()
     @TaskAction
     fun taskAction() {
-        println("easy-register:release search code start")
+        printLog("easy-register:release search code start")
         jarOutput = JarOutputStream(BufferedOutputStream(FileOutputStream(output.get().asFile)))
         val scanTimeCost = measureTimeMillis {
             scanFile()
         }
         jarOutput.close()
-        println("easy-register:release search code finish, current cost time ${scanTimeCost}ms")
+        printLog("easy-register:release search code finish, current cost time ${scanTimeCost}ms")
 
     }
 

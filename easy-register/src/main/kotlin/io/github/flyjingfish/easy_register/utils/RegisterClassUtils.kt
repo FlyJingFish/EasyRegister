@@ -10,6 +10,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 object RegisterClassUtils {
+    var log = true
     var enable = true
     var mode = RootStringConfig.MODE.defaultValue
     private val configJsonFileList = mutableListOf<File>()
