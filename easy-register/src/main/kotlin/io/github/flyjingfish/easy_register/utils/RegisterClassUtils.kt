@@ -17,6 +17,9 @@ object RegisterClassUtils {
     private val searchWovenClasses = mutableListOf<WovenClass>()
     private val searchClasses = mutableListOf<SearchClass>()
     private val wovenClasses = HashSet<String>()
+    private const val NOT_SET = 0
+    private const val MATCH = 1
+    private const val NOT_MATCH = 2
     fun addClass(moduleName:String,className:String,superClassName:String?,interfaces: Array<String>?){
         for (searchClass in searchClasses) {
             val matchExtends = if (searchClass.extendsClass.isNotEmpty()){
@@ -32,29 +35,29 @@ object RegisterClassUtils {
                     }
                 }
                 if (extends){
-                    1
+                    MATCH
                 }else{
-                    2
+                    NOT_MATCH
                 }
             }else{
-                0
+                NOT_SET
             }
 
             val matchName = if (searchClass.regex.isNotEmpty()){
                 val classnameArrayPattern: Pattern = Pattern.compile(searchClass.regex)
                 val matcher: Matcher = classnameArrayPattern.matcher(slashToDot(className))
                 if (matcher.find()){
-                    1
+                    MATCH
                 }else{
-                    2
+                    NOT_MATCH
                 }
             }else{
-                0
+                NOT_SET
             }
 
-            if ((matchExtends == 0 && matchName == 1)||
-                (matchName == 0 && matchExtends == 1)||
-                (matchName == 1 && matchExtends == 1)){
+            if ((matchExtends == NOT_SET && matchName == MATCH)||
+                (matchName == NOT_SET && matchExtends == MATCH)||
+                (matchName == MATCH && matchExtends == MATCH)){
                 searchClass.addClass(moduleName, className)
             }
 
