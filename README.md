@@ -75,7 +75,7 @@
 
 在<strong>项目根目录</strong>的 <code>build.gradle</code> 里依赖插件
 
-- 新版本
+- 新版本(审核中，暂不可用)
 
   ```gradle
   
