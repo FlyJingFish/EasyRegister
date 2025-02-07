@@ -1,5 +1,5 @@
 <h4 align="right">
-  <strong>English</strong> | <a href="https://github.com/FlyJingFish/EasyRegister/blob/master/README.md">简体中文</a>
+  <strong>English</strong> | <a href="https://github.com/FlyJingFish/EasyRegister/blob/master/README-zh.md">简体中文</a>
 </h4>
 
 <h4 align="right">
