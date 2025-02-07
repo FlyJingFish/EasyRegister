@@ -2,9 +2,6 @@
   <strong>English</strong> | <a href="https://github.com/FlyJingFish/EasyRegister/blob/master/README-zh.md">简体中文</a>
 </h4>
 
-<h4 align="right">
-  <strong>Simplified Chinese</strong> | <a href="https://github.com/FlyJingFish/EasyRegister/blob/master/README_EN.md">English</a>
-</h4>
 
 <p align="center">
   <strong>
