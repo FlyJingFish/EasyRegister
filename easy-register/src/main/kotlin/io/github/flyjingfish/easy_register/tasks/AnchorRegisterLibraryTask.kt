@@ -72,7 +72,7 @@ class AnchorRegisterLibraryTask(
                                     val cw = ClassWriter(cr,0)
                                     cr.accept(
                                         RegisterClassVisitor(cw),
-                                        0
+                                        ClassReader.EXPAND_FRAMES
                                     )
                                     cw.toByteArray().saveFile(outFile)
                                     synchronized(needDeleteFiles){

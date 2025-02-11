@@ -237,7 +237,7 @@ abstract class AllClassesTask : DefaultTask() {
         val cw = ClassWriter(cr,0)
         cr.accept(
             RegisterClassVisitor(cw),
-            0
+            ClassReader.EXPAND_FRAMES
         )
         cw.toByteArray().inputStream().use {
             jarOutput.saveEntry(jarEntryName,it)
