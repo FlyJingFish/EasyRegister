@@ -4,6 +4,7 @@ import io.github.flyjingfish.easy_register.bean.SearchClass
 import io.github.flyjingfish.easy_register.bean.WovenClass
 import io.github.flyjingfish.easy_register.config.RootStringConfig
 import org.gradle.api.Project
+import org.objectweb.asm.commons.AdviceAdapter
 import org.objectweb.asm.commons.Method
 import java.io.File
 import java.util.regex.Matcher
@@ -147,6 +148,38 @@ object RegisterClassUtils {
 
     fun isWovenClass(className: String): Boolean {
         return className in wovenClasses
+    }
+
+    fun isCallClass(className: String): Boolean {
+        for (searchClass in searchClasses) {
+            if (searchClass.callClass.isNotEmpty() && searchClass.callClass == slashToDot(className)){
+                return true
+            }
+        }
+        return false
+    }
+
+    fun isCallClassMethod(className: String,methodName:String,methodDesc:String): Boolean {
+        for (searchClass in searchClasses) {
+            if (searchClass.callClass.isNotEmpty() && searchClass.callClass == slashToDot(className)){
+                val isMuchMethod = searchClass.callMethod.contains("#")
+                if (isMuchMethod){
+                    val callMethods = searchClass.callMethod.split("#")
+                    for ((index,callMethodStr) in callMethods.withIndex()) {
+                        val method = Method.getMethod(callMethodStr)
+                        if (method.name == methodName && method.descriptor == methodDesc){
+                            return true
+                        }
+                    }
+                }else{
+                    val method = Method.getMethod(searchClass.callMethod)
+                    if (method.name == methodName && method.descriptor == methodDesc){
+                        return true
+                    }
+                }
+            }
+        }
+        return false
     }
 
     fun getWovenClass(className: String,methodName:String,methodDesc:String): WovenClass? {

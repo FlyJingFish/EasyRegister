@@ -1,6 +1,7 @@
 package io.github.flyjingfish.easy_register.visitor
 
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
+import io.github.flyjingfish.easy_register.utils.addPublic
 import io.github.flyjingfish.easy_register.utils.getWovenClassName
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
@@ -29,11 +30,17 @@ class RegisterClassVisitor(cv: ClassVisitor?) : ClassVisitor(Opcodes.ASM9, cv) {
         access: Int, name: String, descriptor: String, signature: String?, exceptions: Array<out String>?
     ): MethodVisitor {
         val wovenClass = RegisterClassUtils.getWovenClass(className,name,descriptor)
-        return if (wovenClass != null){
-            val mv = super.visitMethod(access, name, descriptor, signature, exceptions)
-            MyMethodAdapter(mv, access, name, descriptor)
+        val isCallClassMethod = RegisterClassUtils.isCallClassMethod(className,name,descriptor)
+        val newAccess = if (isCallClassMethod){
+            access.addPublic(true)
         }else{
-            super.visitMethod(access, name, descriptor, signature, exceptions)
+            access
+        }
+        return if (wovenClass != null){
+            val mv = super.visitMethod(newAccess, name, descriptor, signature, exceptions)
+            MyMethodAdapter(mv, newAccess, name, descriptor)
+        }else{
+            super.visitMethod(newAccess, name, descriptor, signature, exceptions)
         }
 //        else if (name == "register" && descriptor == "(Ljava/lang/String;)V"){
 //            super.visitMethod(access.addPublic(true), name, descriptor, signature, exceptions)

@@ -19,7 +19,7 @@ abstract class MyClassVisitorFactory : AsmClassVisitorFactory<MyParameters> {
 
     override fun isInstrumentable(classData: ClassData): Boolean {
         // 指定哪些类可以被修改，例如过滤某些包名
-        return RegisterClassUtils.isWovenClass(classData.className)
+        return RegisterClassUtils.isWovenClass(classData.className) || RegisterClassUtils.isCallClass(classData.className)
     }
 }
 
