@@ -81,7 +81,7 @@
   
   plugins {
       //必须项 👇 注意 apply 设置必须为 true 
-      id "io.github.FlyJingFish.EasyRegister" version "1.0.1" apply true
+      id "io.github.FlyJingFish.EasyRegister" version "1.0.2" apply true
   }
   ```
 
@@ -91,7 +91,7 @@
     buildscript {
         dependencies {
             //必须项 👇
-            classpath 'io.github.FlyJingFish.EasyRegister:plugin:1.0.1'
+            classpath 'io.github.FlyJingFish.EasyRegister:plugin:1.0.2'
         }
     }
     apply plugin: "easy.register"
@@ -145,7 +145,7 @@ plugins {
 ```gradle
 
 dependencies {
-    implementation 'io.github.FlyJingFish.EasyRegister:plugin:1.0.1'
+    implementation 'io.github.FlyJingFish.EasyRegister:plugin:1.0.2'
 }
 ```
 
