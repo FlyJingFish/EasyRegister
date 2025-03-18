@@ -383,7 +383,7 @@ object AsmUtils {
                                 }
                             }
                                                                },
-                        0
+                        ClassReader.EXPAND_FRAMES
                     )
 //                    return@async
                     if (hasInit){
