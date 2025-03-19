@@ -406,7 +406,7 @@ object AsmUtils {
                 mv.visitEnd() //一定要有visitEnd
 
 
-                mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "init", method.descriptor, null, null)
+                mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, RegisterClassVisitor.INVOKE_METHOD, method.descriptor, null, null)
                 mv.visitCode()
                 addCode(mv)
 
