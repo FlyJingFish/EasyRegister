@@ -9,8 +9,8 @@ import java.io.File
 import kotlin.system.measureTimeMillis
 
 class SearchRegisterClassesTask(
-    private val allJars: MutableList<File>,
-    private val allDirectories: MutableList<File>,
+    private val allJars: List<File>,
+    private val allDirectories: List<File>,
     private val output: File,
     private val project: Project,
     private val isApp:Boolean,
