@@ -14,6 +14,7 @@ import io.github.flyjingfish.easy_register.tasks.AllClassesTask
 import io.github.flyjingfish.easy_register.tasks.HintCleanTask
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
 import io.github.flyjingfish.easy_register.visitor.MyClassVisitorFactory
+import io.github.flyjingfish.fast_transform.toTransformAll
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
 
@@ -98,15 +99,7 @@ object InitPlugin{
         val task = project.tasks.register("${variant.name}EasyRegisterAllClasses", AllClassesTask::class.java){
             it.variant = variant.name
         }
-        variant.artifacts
-            .forScope(ScopedArtifacts.Scope.ALL)
-            .use(task)
-            .toTransform(
-                ScopedArtifact.CLASSES,
-                AllClassesTask::allJars,
-                AllClassesTask::allDirectories,
-                AllClassesTask::output
-            )
+        variant.toTransformAll(task)
     }
 
     fun transformClassesWith(project: Project, variant: Variant) {

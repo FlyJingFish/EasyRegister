@@ -13,6 +13,7 @@ import io.github.flyjingfish.easy_register.utils.registerTransformIgnoreJarDir
 import io.github.flyjingfish.easy_register.utils.slashToDot
 import io.github.flyjingfish.easy_register.utils.toClassPath
 import io.github.flyjingfish.easy_register.visitor.RegisterClassVisitor
+import io.github.flyjingfish.fast_transform.tasks.DefaultTransformTask
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -40,58 +41,54 @@ import java.util.jar.JarOutputStream
 import kotlin.system.measureTimeMillis
 
 
-abstract class AllClassesTask : DefaultTask() {
+abstract class AllClassesTask : DefaultTransformTask() {
 
     @get:Input
     abstract var variant :String
 
-    @get:InputFiles
-    abstract val allJars: ListProperty<RegularFile>
 
-    @get:InputFiles
-    abstract val allDirectories: ListProperty<Directory>
-
-    @get:OutputFile
-    abstract val output: RegularFileProperty
-
-    private lateinit var jarOutput: JarOutputStream
     private val ignoreJar = mutableSetOf<String>()
     private val ignoreJarClassPaths = mutableListOf<File>()
-    @TaskAction
-    fun taskAction() {
+
+    private val allJarFiles = mutableListOf<File>()
+
+    private val allDirectoryFiles = mutableListOf<File>()
+    override fun startTask() {
         printLog("easy-register:release search code start")
-        jarOutput = JarOutputStream(BufferedOutputStream(FileOutputStream(output.get().asFile)))
         val scanTimeCost = measureTimeMillis {
             scanFile()
         }
-        jarOutput.close()
         printLog("easy-register:release search code finish, current cost time ${scanTimeCost}ms")
 
     }
 
+    override fun endTask() {
+    }
 
     private fun scanFile() {
+        allJarFiles.addAll(allJars())
+        allDirectoryFiles.addAll(allDirectories())
         loadJoinPointConfig()
         wovenIntoCode()
     }
 
     private fun loadJoinPointConfig(){
-        val isClassesJar = allDirectories.get().isEmpty() && allJars.get().size == 1
+        val isClassesJar = singleClassesJar()
         ignoreJar.clear()
         ignoreJarClassPaths.clear()
-        allJars.get().forEach { file ->
+        allJarFiles.forEach { file ->
             if (isClassesJar){
-                ignoreJar.add(file.asFile.absolutePath)
+                ignoreJar.add(file.absolutePath)
                 return@forEach
             }
-            val jarFile = JarFile(file.asFile)
+            val jarFile = JarFile(file)
             val enumeration = jarFile.entries()
             while (enumeration.hasMoreElements()) {
                 val jarEntry = enumeration.nextElement()
                 try {
                     val entryName = jarEntry.name
                     if (entryName.isJarSignatureRelatedFiles()){
-                        ignoreJar.add(file.asFile.absolutePath)
+                        ignoreJar.add(file.absolutePath)
                         break
                     }
                 } catch (e: Exception) {
@@ -121,17 +118,17 @@ abstract class AllClassesTask : DefaultTask() {
         }
 
         //第一遍找配置文件
-        allDirectories.get().forEach { directory ->
-            directory.asFile.walk().forEach { file ->
+        allDirectoryFiles.forEach { directory ->
+            directory.walk().forEach { file ->
                 processFile(file)
             }
         }
 
-        allJars.get().forEach { file ->
-            if (file.asFile.absolutePath in ignoreJar){
+        allJarFiles.forEach { file ->
+            if (file.absolutePath in ignoreJar){
                 return@forEach
             }
-            AsmUtils.processJarForConfig(file.asFile)
+            AsmUtils.processJarForConfig(file)
         }
     }
 
@@ -144,12 +141,12 @@ abstract class AllClassesTask : DefaultTask() {
 
                 if (isInstrumentable(jarEntryName)){
                     FileInputStream(file).use { inputs ->
-                        saveClasses(inputs,jarEntryName,jarOutput)
+                        saveClasses(inputs,jarEntryName,directory)
                     }
 
                 }else{
                     file.inputStream().use {
-                        jarOutput.saveEntry(jarEntryName,it)
+                        directory.saveJarEntry(jarEntryName,it)
                     }
                 }
             }
@@ -169,10 +166,10 @@ abstract class AllClassesTask : DefaultTask() {
         }
         wovenCodeFileJobs1.awaitAll()
         val wovenCodeFileJobs2 = mutableListOf<Deferred<Unit>>()
-        allDirectories.get().forEach { directory ->
-            directory.asFile.walk().forEach { file ->
+        allDirectoryFiles.forEach { directory ->
+            directory.walk().forEach { file ->
                 val job = async(Dispatchers.IO) {
-                    processFile(file,directory.asFile)
+                    processFile(file,directory)
                 }
                 wovenCodeFileJobs2.add(job)
             }
@@ -181,11 +178,11 @@ abstract class AllClassesTask : DefaultTask() {
 
 
 
-        allJars.get().forEach { file ->
-            if (file.asFile.absolutePath in ignoreJar){
+        allJarFiles.forEach { file ->
+            if (file.absolutePath in ignoreJar){
                 return@forEach
             }
-            val jarFile = JarFile(file.asFile)
+            val jarFile = JarFile(file)
             val enumeration = jarFile.entries()
             val wovenCodeJarJobs = mutableListOf<Deferred<Unit>>()
             while (enumeration.hasMoreElements()) {
@@ -198,11 +195,11 @@ abstract class AllClassesTask : DefaultTask() {
                     try {
                         if (isInstrumentable(entryName)){
                             jarFile.getInputStream(jarEntry).use { inputs ->
-                                saveClasses(inputs,entryName,jarOutput)
+                                saveClasses(inputs,entryName,file)
                             }
                         }else{
                             jarFile.getInputStream(jarEntry).use {
-                                jarOutput.saveEntry(entryName,it)
+                                file.saveJarEntry(entryName,it)
                             }
                         }
                     } catch (e: Exception) {
@@ -221,7 +218,7 @@ abstract class AllClassesTask : DefaultTask() {
             if (file.isFile) {
                 val className = file.getFileClassname(tmpOtherDir)
                 file.inputStream().use {
-                    jarOutput.saveEntry(className,it)
+                    file.saveJarEntry(className,it)
                 }
             }
         }
@@ -232,7 +229,7 @@ abstract class AllClassesTask : DefaultTask() {
         return RegisterClassUtils.isWovenClass(slashToDot(className).replace(Regex("\\.class$"), ""))  || RegisterClassUtils.isCallClass(slashToDot(className).replace(Regex("\\.class$"), ""))
     }
 
-    fun saveClasses(inputs: InputStream,jarEntryName:String,jarOutput: JarOutputStream){
+    fun saveClasses(inputs: InputStream,jarEntryName:String,jarFile: File){
         val cr = ClassReader(inputs)
         val cw = ClassWriter(cr,0)
         cr.accept(
@@ -240,17 +237,8 @@ abstract class AllClassesTask : DefaultTask() {
             ClassReader.EXPAND_FRAMES
         )
         cw.toByteArray().inputStream().use {
-            jarOutput.saveEntry(jarEntryName,it)
+            jarFile.saveJarEntry(jarEntryName,it)
         }
-    }
-
-    fun JarOutputStream.saveEntry(entryName: String, inputStream: InputStream) {
-        synchronized(this@AllClassesTask){
-            putNextEntry(JarEntry(entryName))
-            inputStream.copyTo( this)
-            closeEntry()
-        }
-
     }
 
 

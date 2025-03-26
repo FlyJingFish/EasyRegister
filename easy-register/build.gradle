@@ -20,6 +20,7 @@ dependencies {
     implementation libs.gson
     implementation libs.kotlin.gradle.plugin
     implementation libs.kotlinx.coroutines
+    implementation libs.fastTransform
 }
 // 发布到gradlePluginPortal
 gradlePlugin {

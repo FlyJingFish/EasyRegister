@@ -1,0 +1,17 @@
+[
+  {
+    "wovenClass": "com.flyjingfish.easy_register.InitCollect",
+    "wovenMethod": "void testEasyRegister()",
+    "createWovenClass": false,
+    "searchClass": {
+      "regex": "",
+      "extendsClass": "com.flyjingfish.easy_register.SubApplication",
+      "callType": "callee",
+      "callClass": "com.flyjingfish.easy_register.InitCollect",
+      "callMethod": "void addEasyRegister(String)",
+      "callMethodValue": "searchClass",
+      "useType": "className"
+    }
+
+  }
+]

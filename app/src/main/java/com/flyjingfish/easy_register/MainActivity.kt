@@ -1,6 +1,7 @@
 package com.flyjingfish.easy_register
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.flyjingfish.easy_register.databinding.ActivityMainBinding
 
@@ -11,6 +12,7 @@ class MainActivity: AppCompatActivity(){
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        Log.e("MainActivity","=====>>>>")
     }
 
 

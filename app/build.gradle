@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlinx-serialization'
+    id 'easy.register'
 }
 
 android {
@@ -9,6 +10,7 @@ android {
     compileSdk 33
     defaultConfig {
         applicationId "com.flyjingfish.easy_register"
+        minSdk 21
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -26,36 +28,25 @@ android {
         }
     }
 
-    signingConfigs {
-        release {
-            storeFile file(rootProject.file("keystore"))
-            storePassword '123456'
-            keyAlias 'android_aop'
-            keyPassword '123456'
-        }
-    }
     flavorDimensions.add("env")
     productFlavors {
         informal {
             dimension "env"
-            signingConfig signingConfigs.release
         }
         product {
             dimension "env"
-            signingConfig signingConfigs.release
         }
     }
 
     buildTypes {
         debug {
             ext.enableCrashlytics = false
-            signingConfig signingConfigs.release
             shrinkResources false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
