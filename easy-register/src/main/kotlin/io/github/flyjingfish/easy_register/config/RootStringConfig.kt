@@ -19,6 +19,12 @@ enum class RootStringConfig(
     MODE("easyRegister.mode", "debug"),
 
     /**
+     * 当 easyRegister.mode 处于 release 或 auto(release) 时，是否启用加速
+     */
+
+    FAST("easyRegister.releaseMode.fastDex", "false"),
+
+    /**
      * 配置文件，文件放置于 gradle.properties 同级目录
      */
     CONFIG_JSON("easyRegister.configJson", ""),

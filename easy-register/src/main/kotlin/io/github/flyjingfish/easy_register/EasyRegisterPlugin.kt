@@ -16,6 +16,8 @@ class EasyRegisterPlugin : Plugin<Project> {
         if (!enable){
             return
         }
+        val fastStr = project.properties[RootStringConfig.FAST.propertyName]?: RootStringConfig.FAST.defaultValue
+        RegisterClassUtils.fastDex = fastStr == "true"
 
         val mode = project.properties[RootStringConfig.MODE.propertyName]?.toString()?: RootStringConfig.MODE.defaultValue
         RegisterClassUtils.mode = if (mode !in RootStringConfig.MODE_SET){

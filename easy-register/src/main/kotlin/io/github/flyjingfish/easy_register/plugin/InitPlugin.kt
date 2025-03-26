@@ -99,7 +99,7 @@ object InitPlugin{
         val task = project.tasks.register("${variant.name}EasyRegisterAllClasses", AllClassesTask::class.java){
             it.variant = variant.name
         }
-        variant.toTransformAll(task)
+        variant.toTransformAll(task,RegisterClassUtils.fastDex)
     }
 
     fun transformClassesWith(project: Project, variant: Variant) {

@@ -13,6 +13,7 @@ import java.util.regex.Pattern
 object RegisterClassUtils {
     var log = true
     var enable = true
+    var fastDex = false
     var mode = RootStringConfig.MODE.defaultValue
     private val configJsonFileList = mutableListOf<File>()
     private val searchWovenClasses = mutableListOf<WovenClass>()
