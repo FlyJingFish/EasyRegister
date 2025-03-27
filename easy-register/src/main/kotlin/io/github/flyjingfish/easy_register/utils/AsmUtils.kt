@@ -1,14 +1,12 @@
 package io.github.flyjingfish.easy_register.utils
 
 import io.github.flyjingfish.easy_register.bean.WovenClass
-import io.github.flyjingfish.easy_register.tasks.SearchRegisterClassesTask
 import io.github.flyjingfish.easy_register.visitor.RegisterClassVisitor
 import io.github.flyjingfish.easy_register.visitor.SearchClassScanner
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
@@ -24,25 +22,29 @@ import java.io.FileInputStream
 import java.util.jar.JarFile
 
 object AsmUtils {
-    fun processFileForConfig(project: Project, file: File) {
+    fun processFileForConfig(directory: File, file: File, scope: CoroutineScope, searchJobs: MutableList<Deferred<Unit>>) {
         if (file.isFile) {
-            if (file.absolutePath.endsWith(SearchRegisterClassesTask._CLASS)) {
-                FileInputStream(file).use { inputs ->
-                    val bytes = inputs.readAllBytes()
-                    if (bytes.isNotEmpty()) {
-                        val classReader = ClassReader(bytes)
-                        classReader.accept(
-                            SearchClassScanner(project.name),
-                            ClassReader.SKIP_CODE or ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES
-                        )
+            if (file.absolutePath.endsWith(_CLASS)) {
+                val job = scope.async(Dispatchers.IO) {
+                    FileInputStream(file).use { inputs ->
+                        val bytes = inputs.readAllBytes()
+                        if (bytes.isNotEmpty()) {
+                            val classReader = ClassReader(bytes)
+                            classReader.accept(
+                                SearchClassScanner(directory.absolutePath),
+                                ClassReader.SKIP_CODE or ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES
+                            )
+                        }
                     }
                 }
+                searchJobs.add(job)
+
             }
 
         }
     }
 
-    fun processJarForConfig(file: File) {
+    fun processJarForConfig(file: File,scope: CoroutineScope, searchJobs: MutableList<Deferred<Unit>>):JarFile {
         val jarFile = JarFile(file)
         val enumeration = jarFile.entries()
         while (enumeration.hasMoreElements()) {
@@ -52,23 +54,27 @@ object AsmUtils {
                 if (jarEntry.isDirectory || jarEntry.name.isEmpty()) {
                     continue
                 }
-                if (entryName.endsWith(SearchRegisterClassesTask._CLASS)) {
-                    jarFile.getInputStream(jarEntry).use { inputs ->
-                        val bytes = inputs.readAllBytes()
-                        if (bytes.isNotEmpty()) {
-                            val classReader = ClassReader(bytes)
-                            classReader.accept(
-                                SearchClassScanner(file.absolutePath),
-                                ClassReader.SKIP_CODE or ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES
-                            )
+                if (entryName.endsWith(_CLASS)) {
+                    val job = scope.async(Dispatchers.IO) {
+                        jarFile.getInputStream(jarEntry).use { inputs ->
+                            val bytes = inputs.readAllBytes()
+                            if (bytes.isNotEmpty()) {
+                                val classReader = ClassReader(bytes)
+                                classReader.accept(
+                                    SearchClassScanner(file.absolutePath),
+                                    ClassReader.SKIP_CODE or ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES
+                                )
+                            }
                         }
                     }
+                    searchJobs.add(job)
+
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-        jarFile.close()
+        return jarFile
     }
 
     fun createInitClass(output:File) {

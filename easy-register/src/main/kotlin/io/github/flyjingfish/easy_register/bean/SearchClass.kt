@@ -24,19 +24,15 @@ data class SearchClass(
 
     fun addClass(moduleName:String,className:String){
         classNames?.let {
-            val list = it.computeIfAbsent(moduleName) { mutableSetOf() }
-            synchronized(list){
-                list.add(className)
-            }
+            val list = it.computeIfAbsent(moduleName) { ConcurrentHashMap.newKeySet() }
+            list.add(className)
         }
     }
 
     fun clear(moduleName:String){
         classNames?.let {
-            val list = it.computeIfAbsent(moduleName) { mutableSetOf() }
-            synchronized(list){
-                list.clear()
-            }
+            val list = it.computeIfAbsent(moduleName) { ConcurrentHashMap.newKeySet() }
+            list.clear()
         }
     }
 

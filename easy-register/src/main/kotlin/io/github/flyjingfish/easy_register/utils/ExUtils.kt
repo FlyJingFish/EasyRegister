@@ -9,7 +9,7 @@ import java.io.InputStream
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.zip.ZipInputStream
-
+const val _CLASS = ".class"
 fun registerTransformIgnoreJarDir(project:Project, variantName:String):String{
     return project.buildDir.absolutePath+"/tmp/easy-register/${variantName}/tempTransformIgnoreJar/".adapterOSPath()
 }

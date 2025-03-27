@@ -6,7 +6,6 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.DynamicFeaturePlugin
 import com.android.build.gradle.LibraryExtension
 import io.github.flyjingfish.easy_register.bean.VariantBean
-import io.github.flyjingfish.easy_register.tasks.SearchRegisterClassesTask
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
 import io.github.flyjingfish.easy_register.utils.adapterOSPath
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
@@ -65,22 +64,6 @@ class SearchCodePlugin(private val root:Boolean): Plugin<Project> {
             val variantName = variant.name
             val buildTypeName = variant.buildType.name
 
-//            if (isApp){
-//                val isIncrementalStr = project.properties[RootStringConfig.APP_INCREMENTAL.propertyName]?: RootStringConfig.APP_INCREMENTAL.defaultValue
-//                val isIncremental = isIncrementalStr == "true"
-//                if (!isIncremental){
-//                    val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
-//                    if (debugMode){
-//                        javaCompile.outputs.upToDateWhen { return@upToDateWhen false }
-//                    }
-//                }
-//            }
-//            javaCompile.doFirst{
-//                val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
-//                if (debugMode){
-//                    JsonUtils.deleteNeedDelWovenFile(project, variantName)
-//                }
-//            }
             kotlinCompileVariantMap["compile${variantName.capitalized()}Kotlin"] = VariantBean(variantName,buildTypeName)
             javaCompile.doLast{
                 val task = try {
@@ -127,15 +110,8 @@ class SearchCodePlugin(private val root:Boolean): Plugin<Project> {
                 }
             }
         }
-        if (localInput.isNotEmpty()){
-            val jarInputFiles: List<File> = jarInput.map(::File)
-            val localInputFiles: List<File> = localInput.map(::File)
-            val output = File(kotlinCompile.destinationDirectory.asFile.orNull.toString())
-            val task = SearchRegisterClassesTask(jarInputFiles,localInputFiles,output,project,isApp,
-                variantName,false
-            )
-            task.taskAction()
-        }
+        RegisterClassUtils.addJars(jarInput)
+        RegisterClassUtils.addDirectories(localInput)
     }
 
 
@@ -171,15 +147,8 @@ class SearchCodePlugin(private val root:Boolean): Plugin<Project> {
                 }
             }
         }
-        if (localInput.isNotEmpty()){
-            val jarInputFiles: List<File> = jarInput.map(::File)
-            val localInputFiles: List<File> = localInput.map(::File)
-            val output = File(javaCompile.destinationDirectory.asFile.orNull.toString())
-            val task = SearchRegisterClassesTask(jarInputFiles,localInputFiles,output,project,isApp,
-                variantName
-            )
-            task.taskAction()
-        }
+        RegisterClassUtils.addJars(jarInput)
+        RegisterClassUtils.addDirectories(localInput)
     }
 
 }

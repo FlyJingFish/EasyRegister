@@ -4,9 +4,9 @@ import io.github.flyjingfish.easy_register.bean.SearchClass
 import io.github.flyjingfish.easy_register.bean.WovenClass
 import io.github.flyjingfish.easy_register.config.RootStringConfig
 import org.gradle.api.Project
-import org.objectweb.asm.commons.AdviceAdapter
 import org.objectweb.asm.commons.Method
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -22,6 +22,21 @@ object RegisterClassUtils {
     private const val NOT_SET = 0
     private const val MATCH = 1
     private const val NOT_MATCH = 2
+    val allJars = ConcurrentHashMap.newKeySet<String>()
+    val allDirectories = ConcurrentHashMap.newKeySet<String>()
+    fun addJars(paths:Set<String>){
+        allJars.addAll(paths)
+    }
+    fun addDirectories(paths:Set<String>){
+        allDirectories.addAll(paths)
+    }
+
+    fun clearInputs(){
+        allJars.clear()
+        allDirectories.clear()
+    }
+
+
     fun addClass(moduleName:String,className:String,superClassName:String?,interfaces: Array<String>?){
         for (searchClass in searchClasses) {
             val matchExtends = if (searchClass.extendsClass.isNotEmpty()){
@@ -66,11 +81,11 @@ object RegisterClassUtils {
         }
     }
 
-    fun clear(moduleName: String){
-        for (searchWovenClass in searchWovenClasses) {
-            searchWovenClass.clear(moduleName)
-        }
-    }
+//    fun clear(moduleName: String){
+//        for (searchWovenClass in searchWovenClasses) {
+//            searchWovenClass.clear(moduleName)
+//        }
+//    }
 
     fun getClasses():List<WovenClass>{
         return searchWovenClasses

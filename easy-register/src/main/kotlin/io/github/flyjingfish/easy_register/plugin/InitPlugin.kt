@@ -17,6 +17,7 @@ import io.github.flyjingfish.easy_register.visitor.MyClassVisitorFactory
 import io.github.flyjingfish.fast_transform.toTransformAll
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
+import java.io.File
 
 object InitPlugin{
     private fun deepSetAllModuleSearchCode(project: Project){
@@ -113,14 +114,20 @@ object InitPlugin{
         variant.instrumentation.setAsmFramesComputationMode(
             FramesComputationMode.COPY_FRAMES
         )
-
         val taskProvider = project.tasks.register("${variant.name}EasyRegisterAddClasses",
             AddClassesTask::class.java){
             it.variant = variant.name
+
         }
-        taskProvider.configure {
-            it.dependsOn("compile${variant.name.capitalized()}JavaWithJavac")
-            it.outputs.upToDateWhen { return@upToDateWhen false }
+        taskProvider.configure { task ->
+            task.dependsOn("compile${variant.name.capitalized()}JavaWithJavac")
+            task.outputs.upToDateWhen { return@upToDateWhen false }
+            task.doFirst{
+                task.setFrom(RegisterClassUtils.allDirectories.map(::File),RegisterClassUtils.allJars.map(::File))
+            }
+            task.doLast {
+                RegisterClassUtils.clearInputs()
+            }
         }
         variant.artifacts
             .forScope(ScopedArtifacts.Scope.PROJECT)

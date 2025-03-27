@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
@@ -72,7 +73,7 @@ abstract class AllClassesTask : DefaultTransformTask() {
         wovenIntoCode()
     }
 
-    private fun loadJoinPointConfig(){
+    private fun loadJoinPointConfig() = runBlocking{
         val isClassesJar = singleClassesJar()
         ignoreJar.clear()
         ignoreJarClassPaths.clear()
@@ -107,28 +108,36 @@ abstract class AllClassesTask : DefaultTransformTask() {
                 ignoreJarClassPaths.add(destFile)
             }
         }
-
-        fun processFile(file : File){
-            AsmUtils.processFileForConfig(project,file)
+        val searchJobs = mutableListOf<Deferred<Unit>>()
+        fun processFile(directory:File,file : File){
+            AsmUtils.processFileForConfig(directory,file,this@runBlocking,searchJobs)
         }
         for (directory in ignoreJarClassPaths) {
             directory.walk().forEach { file ->
-                processFile(file)
+                processFile(directory,file)
             }
         }
 
         //第一遍找配置文件
         allDirectoryFiles.forEach { directory ->
             directory.walk().forEach { file ->
-                processFile(file)
+                processFile(directory,file)
             }
         }
-
+        val jarFiles = mutableListOf<JarFile>()
         allJarFiles.forEach { file ->
             if (file.absolutePath in ignoreJar){
                 return@forEach
             }
-            AsmUtils.processJarForConfig(file)
+            jarFiles.add(AsmUtils.processJarForConfig(file,this@runBlocking,searchJobs))
+        }
+        if (searchJobs.isNotEmpty()){
+            searchJobs.awaitAll()
+        }
+        for (jarFile in jarFiles) {
+            withContext(Dispatchers.IO) {
+                jarFile.close()
+            }
         }
     }
 
@@ -152,7 +161,7 @@ abstract class AllClassesTask : DefaultTransformTask() {
             }
 
         }
-        val wovenCodeFileJobs1 = mutableListOf<Deferred<Unit>>()
+        val wovenCodeJobs = mutableListOf<Deferred<Unit>>()
         for (directory in ignoreJarClassPaths) {
             directory.walk().sortedBy {
                 it.name.length
@@ -160,23 +169,20 @@ abstract class AllClassesTask : DefaultTransformTask() {
                 val job = async(Dispatchers.IO) {
                     processFile(file, directory)
                 }
-                wovenCodeFileJobs1.add(job)
+                wovenCodeJobs.add(job)
             }
 
         }
-        wovenCodeFileJobs1.awaitAll()
-        val wovenCodeFileJobs2 = mutableListOf<Deferred<Unit>>()
         allDirectoryFiles.forEach { directory ->
             directory.walk().forEach { file ->
                 val job = async(Dispatchers.IO) {
                     processFile(file,directory)
                 }
-                wovenCodeFileJobs2.add(job)
+                wovenCodeJobs.add(job)
             }
         }
-        wovenCodeFileJobs2.awaitAll()
 
-
+        val jarFiles = mutableListOf<JarFile>()
 
         allJarFiles.forEach { file ->
             if (file.absolutePath in ignoreJar){
@@ -184,7 +190,6 @@ abstract class AllClassesTask : DefaultTransformTask() {
             }
             val jarFile = JarFile(file)
             val enumeration = jarFile.entries()
-            val wovenCodeJarJobs = mutableListOf<Deferred<Unit>>()
             while (enumeration.hasMoreElements()) {
                 val jarEntry = enumeration.nextElement()
                 val entryName = jarEntry.name
@@ -206,20 +211,29 @@ abstract class AllClassesTask : DefaultTransformTask() {
                         e.printStackTrace()
                     }
                 }
-                wovenCodeJarJobs.add(job)
+                wovenCodeJobs.add(job)
             }
-
-            wovenCodeJarJobs.awaitAll()
-            jarFile.close()
+            jarFiles.add(jarFile)
         }
+
         val tmpOtherDir = File(registerCompileTempDir(project,variant))
         AsmUtils.createInitClass(tmpOtherDir)
         for (file in tmpOtherDir.walk()) {
             if (file.isFile) {
                 val className = file.getFileClassname(tmpOtherDir)
-                file.inputStream().use {
-                    file.saveJarEntry(className,it)
+                val job = async(Dispatchers.IO) {
+                    file.inputStream().use {
+                        file.saveJarEntry(className,it)
+                    }
                 }
+                wovenCodeJobs.add(job)
+
+            }
+        }
+        wovenCodeJobs.awaitAll()
+        for (jarFile in jarFiles) {
+            withContext(Dispatchers.IO) {
+                jarFile.close()
             }
         }
     }
