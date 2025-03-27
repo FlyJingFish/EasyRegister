@@ -81,7 +81,7 @@
   
   plugins {
       //必须项 👇 注意 apply 设置必须为 true 
-      id "io.github.FlyJingFish.EasyRegister" version "1.0.3" apply true
+      id "io.github.FlyJingFish.EasyRegister" version "1.0.3" apply false
   }
   ```
 
@@ -94,7 +94,6 @@
             classpath 'io.github.FlyJingFish.EasyRegister:plugin:1.0.3'
         }
     }
-    apply plugin: "easy.register"
     ```
 
 ### 2、在 app 模块引入插件（必须）

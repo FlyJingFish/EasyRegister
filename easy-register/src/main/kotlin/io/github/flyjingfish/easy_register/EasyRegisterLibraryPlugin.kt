@@ -6,7 +6,6 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.DynamicFeaturePlugin
 import com.android.build.gradle.LibraryExtension
 import io.github.flyjingfish.easy_register.bean.VariantBean
-import io.github.flyjingfish.easy_register.plugin.SearchCodePlugin
 import io.github.flyjingfish.easy_register.tasks.AnchorRegisterLibraryTask
 import io.github.flyjingfish.easy_register.utils.JsonUtils
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
@@ -21,13 +20,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompileTool
 import java.io.File
 
 class EasyRegisterLibraryPlugin : Plugin<Project> {
-
+    companion object{
+        const val ANDROID_EXTENSION_NAME = "android"
+    }
     override fun apply(project: Project) {
         val isApp = project.plugins.hasPlugin(AppPlugin::class.java)
 
 
         val isDynamicLibrary = project.plugins.hasPlugin(DynamicFeaturePlugin::class.java)
-        val androidObject: Any = project.extensions.findByName(SearchCodePlugin.ANDROID_EXTENSION_NAME) ?: return
+        val androidObject: Any = project.extensions.findByName(ANDROID_EXTENSION_NAME) ?: return
 
 
         val kotlinCompileFilePathMap = mutableMapOf<String, KotlinCompileTool>()

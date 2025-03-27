@@ -12,7 +12,6 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.0' apply false
     id 'io.github.gradle-nexus.publish-plugin' version "2.0.0-rc-1"
 }
-apply plugin: "easy.register"
 ext {
     sdkVersion = 31
     minSdkVersion = 21

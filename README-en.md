@@ -79,7 +79,7 @@ Depend on plugins in <code>build.gradle</code> in the <strong>project root direc
   
   plugins {
     //Required item 👇 Note that the apply setting must be true
-    id "io.github.FlyJingFish.EasyRegister" version "1.0.3" apply true
+    id "io.github.FlyJingFish.EasyRegister" version "1.0.3" apply false
   }
   ```
 
@@ -92,7 +92,6 @@ Depend on plugins in <code>build.gradle</code> in the <strong>project root direc
       classpath 'io.github.FlyJingFish.EasyRegister:plugin:1.0.3'
     }
   }
-  apply plugin: "easy.register"
   ```
 
 ### 2. Introduce plugins in app module (required)

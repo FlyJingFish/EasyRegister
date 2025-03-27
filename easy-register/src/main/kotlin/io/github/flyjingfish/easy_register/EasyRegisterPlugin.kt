@@ -26,7 +26,6 @@ class EasyRegisterPlugin : Plugin<Project> {
             mode
         }
         InitPlugin.initFromFile(project)
-        InitPlugin.rootPluginDeepApply(project)
 
 
         val isAnchorStr = project.properties[RootStringConfig.ANCHOR.propertyName]?: RootStringConfig.ANCHOR.defaultValue
