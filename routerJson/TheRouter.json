@@ -10,7 +10,7 @@
       "callClass": "",
       "callMethod": "void addFlowTask(android.content.Context,com.therouter.flow.Digraph)",
       "callMethodValue": "$0,$1",
-      "useType": "className"
+      "useType": ""
     }
 
   },
@@ -25,7 +25,7 @@
       "callClass": "",
       "callMethod": "void autowiredInject(Object)",
       "callMethodValue": "$0",
-      "useType": "className"
+      "useType": ""
     }
 
   },
@@ -40,7 +40,7 @@
       "callClass": "",
       "callMethod": "void addRoute()",
       "callMethodValue": "",
-      "useType": "className"
+      "useType": ""
     }
 
   },

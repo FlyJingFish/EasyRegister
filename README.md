@@ -107,11 +107,34 @@ plugins {
 
 ### 3、配置织入代码
 
-在项目根目录的 `gradle.properties` 中加入以下配置，example.json 放在和 `gradle.properties` 的同级目录下，详细说明可[点此查看](https://github.com/FlyJingFish/EasyRegister/blob/master/example.json)
+在项目根目录的 `gradle.properties` 中加入以下配置，example.json 放在和 `gradle.properties` 的同级目录下
 
 ```properties
 easyRegister.configJson = example.json
 ```
+
+参数说明：
+```json
+[
+  {
+    "wovenClass": "注入的类名",
+    "wovenMethod": "注入的方法名包括参数类型和返回类型",//例如void register(String)
+    "createWovenClass": false,//注入的类是否要新建出来
+    "searchClass": {
+      "regex": "正则表达式",//查找的类，使用正则表达式来 匹配类名
+      "extendsClass": "继承的类名", //查找的类，继承类或接口的类名
+      "callType": "调用搜索到的类型，caller，callee",//caller表示注解调用查找到的类的 callMethod，callee表示调用 callClass 的 callMethod 传入查找到的类
+      "callClass": "调用的的类名如果是caller不填，如果是callee就填相应的类类名",
+      "callMethod": "调用的的方法名包括参数类型和返回类型",//例如void register(String)
+      "callMethodValue": "调用的的方法填写参数,searchClass 就是当前数据，$n就是注入方法的参数,n代表第几个",// 填写 searchClass 就是使用查找到的类；填写 $n 就是使用 wovenMethod 的第几个参数
+      "useType": "使用的类型，className，new，class，如果是callee必填，否则不填",//如果是 caller 不需要填写，如果是callee，当callMethodValue填写searchClass时，className就是类名字符串，new 就是创建对象，class就是类的class对象
+    }
+
+  }
+]
+```
+
+使用案例[点此查看](https://github.com/FlyJingFish/EasyRegister/blob/master/routerJson/)
 
 其他配置
 
