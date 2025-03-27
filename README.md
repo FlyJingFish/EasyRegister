@@ -121,7 +121,7 @@ easyRegister.configJson = example.json
     "wovenMethod": "注入的方法名包括参数类型和返回类型",//例如void register(String)
     "createWovenClass": false,//注入的类是否要新建出来
     "searchClass": {
-      "regex": "正则表达式",//查找的类，使用正则表达式来 匹配类名
+      "regex": "正则表达式",//查找的类，使用正则表达式来 匹配类名（regex和extendsClass必须至少填写一个，或者都写）
       "extendsClass": "继承的类名", //查找的类，继承类或接口的类名
       "callType": "调用搜索到的类型，caller，callee",//caller表示调用查找到的类的 callMethod，callee表示调用 callClass 的 callMethod 传入查找到的类
       "callClass": "调用的的类名如果是caller不填，如果是callee就填 callMethod 相应的类类名",
