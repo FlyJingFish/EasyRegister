@@ -116,10 +116,12 @@ easyRegister.configJson = example.json
 其他配置
 
 ```properties
-//是否启用本插件
+#是否启用本插件
 easyRegister.enable = true
-//启用什么模式 auto 只在debug模式启用优化，debug 是指会一直启用优化，release 是指不启用优化
+#启用什么模式 auto 只在debug模式启用优化，debug 是指会一直启用优化，release 是指不启用优化
 easyRegister.mode = auto //auto、debug、release
+# easyRegister.mode = release 或 auto(release) 时设置为 true 可以增量快速编译
+easyRegister.releaseMode.fastDex = true
 ```
 
 
