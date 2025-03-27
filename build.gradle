@@ -56,7 +56,7 @@ def getAppVersionCode() {
 }
 
 task aaBumpVersion() {
-    doLast {
+    doFirst {
         def versionName = getAppVersionCode() + 1
         def str = versionName.toString()
         def length = str.length()
@@ -84,7 +84,23 @@ task aaBumpVersion() {
 
 
         gradleFile.write(text2)
+        version = newVersionName
+        rootProject.subprojects { subproject ->
+            subproject.version = newVersionName
+        }
         println("升级版本号完成，versionName = "+newVersionName)
+
+    }
+}
+subprojects { subproject ->
+    subproject.afterEvaluate {
+        def list = new ArrayList<String>()
+        subproject.tasks.forEach { task ->
+            if ("publishAllPublicationsToNexusRepository" == task.name){
+                list.add("${subproject.path}:publishMavenJavaPublicationToMavenLocal")
+            }
+        }
+        aaBumpVersion.finalizedBy(list.toArray())
     }
 }
 
