@@ -105,13 +105,13 @@ plugins {
 
 ### 3. Configure weaving code
 
-Add the following configuration to `gradle.properties` in the root directory of the project. Example.json is placed in the same directory as `gradle.properties`. For detailed instructions.
+- Add the following configuration to `gradle.properties` in the root directory of the project. Example.json is placed in the same directory as `gradle.properties`. For detailed instructions.
 
 ```properties
 easyRegister.configJson = example.json
 ```
 
-Parameter description:
+- Parameter description:
 ```json
 [
   {
@@ -134,7 +134,7 @@ Parameter description:
 
 Use case [click here to view](https://github.com/FlyJingFish/EasyRegister/blob/master/routerJson/)
 
-Other configurations
+- Other configurations
 
 ```properties
 //Whether to enable this plugin

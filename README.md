@@ -107,13 +107,13 @@ plugins {
 
 ### 3、配置织入代码
 
-在项目根目录的 `gradle.properties` 中加入以下配置，example.json 放在和 `gradle.properties` 的同级目录下
+- 在项目根目录的 `gradle.properties` 中加入以下配置，example.json 放在和 `gradle.properties` 的同级目录下
 
 ```properties
 easyRegister.configJson = example.json
 ```
 
-参数说明：
+- 参数说明：
 ```json
 [
   {
@@ -136,7 +136,7 @@ easyRegister.configJson = example.json
 
 使用案例[点此查看](https://github.com/FlyJingFish/EasyRegister/blob/master/routerJson/)
 
-其他配置
+- 其他配置
 
 ```properties
 #是否启用本插件
