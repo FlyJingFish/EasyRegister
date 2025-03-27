@@ -4,7 +4,9 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 
-public class TestApp2 implements SubApplication{
+import com.flyjingfish.easy_register.base.SubApplication;
+
+public class TestApp2 implements SubApplication {
     @Override
     public void onCreate(@NonNull Application application) {
 

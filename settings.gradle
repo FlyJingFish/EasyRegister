@@ -27,3 +27,4 @@ dependencyResolutionManagement {
 rootProject.name = "EasyRegister"
 include ':app'
 include ':easy-register'
+include ':base'
