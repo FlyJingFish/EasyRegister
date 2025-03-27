@@ -41,14 +41,17 @@ class SearchCodePlugin(private val root:Boolean): Plugin<Project> {
         } else {
             (android as LibraryExtension).libraryVariants
         }
-        project.tasks.withType(KotlinCompile::class.java).configureEach { task ->
-            kotlinCompileFilePathMap[task.name] = task
-            task.doLast {
-                val variantBean = kotlinCompileVariantMap[it.name]
-                if (variantBean != null){
-                    doKotlinSearchTask(project, isApp, variantBean.variantName, variantBean.buildTypeName, task)
+        try {
+            project.tasks.withType(KotlinCompile::class.java).configureEach { task ->
+                kotlinCompileFilePathMap[task.name] = task
+                task.doLast {
+                    val variantBean = kotlinCompileVariantMap[it.name]
+                    if (variantBean != null){
+                        doKotlinSearchTask(project, isApp, variantBean.variantName, variantBean.buildTypeName, task)
+                    }
                 }
             }
+        } catch (_: Exception) {
         }
         variants.all { variant ->
 

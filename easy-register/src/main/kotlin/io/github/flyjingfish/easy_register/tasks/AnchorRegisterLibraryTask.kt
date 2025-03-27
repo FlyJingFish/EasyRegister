@@ -1,6 +1,7 @@
 package io.github.flyjingfish.easy_register.tasks
 
 import io.github.flyjingfish.easy_register.utils.JsonUtils
+import io.github.flyjingfish.easy_register.utils._CLASS
 import io.github.flyjingfish.easy_register.utils.registerCompileTempDir
 import io.github.flyjingfish.easy_register.utils.checkExist
 import io.github.flyjingfish.easy_register.utils.getRelativePath
@@ -23,17 +24,11 @@ import java.io.FileInputStream
 import kotlin.system.measureTimeMillis
 
 class AnchorRegisterLibraryTask(
-    private val allJars: MutableList<File>,
-    private val allDirectories: MutableList<File>,
+    private val allDirectories: List<File>,
     private val output: File,
     private val project: Project,
-    private val isApp:Boolean,
     private val variantName:String,
 ) {
-    companion object{
-        const val _CLASS = ".class"
-
-    }
 
     private lateinit var logger: Logger
     fun taskAction() {
@@ -65,7 +60,7 @@ class AnchorRegisterLibraryTask(
                                 val bytes = inputs.readAllBytes()
                                 if (bytes.isNotEmpty()) {
                                     val relativePath = file.getRelativePath(directory)
-                                    val tmpCompileDir = registerCompileTempDir(project,variantName)
+                                    val tmpCompileDir = output.absolutePath
                                     val outFile = File(tmpCompileDir+File.separatorChar+relativePath)
                                     outFile.checkExist()
                                     val cr = ClassReader(bytes)

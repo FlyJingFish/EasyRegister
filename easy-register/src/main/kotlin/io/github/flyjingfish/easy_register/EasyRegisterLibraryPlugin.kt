@@ -5,9 +5,11 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.DynamicFeaturePlugin
 import com.android.build.gradle.LibraryExtension
+import io.github.flyjingfish.easy_register.bean.VariantBean
 import io.github.flyjingfish.easy_register.plugin.SearchCodePlugin
 import io.github.flyjingfish.easy_register.tasks.AnchorRegisterLibraryTask
 import io.github.flyjingfish.easy_register.utils.JsonUtils
+import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
 import io.github.flyjingfish.easy_register.utils.adapterOSPath
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
 import org.gradle.api.Plugin
@@ -35,6 +37,19 @@ class EasyRegisterLibraryPlugin : Plugin<Project> {
         } else {
             (android as LibraryExtension).libraryVariants
         }
+        val kotlinCompileVariantMap = mutableMapOf<String, VariantBean>()
+        try {
+            project.tasks.withType(KotlinCompile::class.java).configureEach { task ->
+                kotlinCompileFilePathMap[task.name] = task
+                task.doLast {
+                    val variantBean = kotlinCompileVariantMap[it.name]
+                    if (variantBean != null){
+                        doKotlinSearchTask(project, isApp, variantBean.variantName, variantBean.buildTypeName, task)
+                    }
+                }
+            }
+        } catch (_: Throwable) {
+        }
         variants.all { variant ->
             try {
                 project.tasks.withType(KotlinCompile::class.java).configureEach { task ->
@@ -53,6 +68,10 @@ class EasyRegisterLibraryPlugin : Plugin<Project> {
                 }
             val variantName = variant.name
             val buildTypeName = variant.buildType.name
+
+
+            kotlinCompileVariantMap["compile${variantName.capitalized()}Kotlin"] = VariantBean(variantName,buildTypeName)
+
             javaCompile.doFirst{
                 JsonUtils.deleteNeedDelFile(project, variantName)
             }
@@ -61,7 +80,7 @@ class EasyRegisterLibraryPlugin : Plugin<Project> {
                 val task = kotlinCompileFilePathMap["compile${variantName.capitalized()}Kotlin"]
                 val cacheDir = try {
                     task?.destinationDirectory?.get()?.asFile
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     null
                 }
                 val kotlinPath = cacheDir ?: File(project.buildDir.path + "/tmp/kotlin-classes/".adapterOSPath() + variantName)
@@ -70,34 +89,72 @@ class EasyRegisterLibraryPlugin : Plugin<Project> {
         }
     }
 
+
+    private fun doKotlinSearchTask(project: Project, isApp:Boolean, variantName: String, buildTypeName: String,
+                                   kotlinCompile:KotlinCompileTool){
+
+        val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variantName)
+        if (!debugMode){
+            return
+        }
+
+        val localInput = mutableSetOf<String>()
+        val javaPath = kotlinCompile.destinationDirectory.get().asFile
+        if (javaPath.exists()){
+            localInput.add(javaPath.absolutePath)
+        }
+
+        val jarInput = mutableSetOf<String>()
+        val bootJarPath = mutableSetOf<String>()
+        for (file in localInput) {
+            bootJarPath.add(file)
+        }
+        for (file in kotlinCompile.libraries) {
+            if (file.absolutePath !in bootJarPath && file.exists()){
+                if (file.isDirectory){
+                    localInput.add(file.absolutePath)
+                }else{
+                    jarInput.add(file.absolutePath)
+                }
+            }
+        }
+        if (localInput.isNotEmpty()){
+            val output = File(kotlinCompile.destinationDirectory.asFile.orNull.toString())
+            val task = AnchorRegisterLibraryTask(localInput.map(::File),output,project,
+                variantName
+            )
+            task.taskAction()
+        }
+    }
+
     private fun doAopTask(project: Project, isApp:Boolean, variantName: String, buildTypeName: String,
                           javaCompile:AbstractCompile, kotlinPath: File){
-        val localInput = mutableListOf<File>()
+        val localInput = mutableSetOf<String>()
         val javaPath = File(javaCompile.destinationDirectory.asFile.orNull.toString())
         if (javaPath.exists()){
-            localInput.add(javaPath)
+            localInput.add(javaPath.absolutePath)
         }
 
         if (kotlinPath.exists()){
-            localInput.add(kotlinPath)
+            localInput.add(kotlinPath.absolutePath)
         }
-        val jarInput = mutableListOf<File>()
+        val jarInput = mutableSetOf<String>()
         val bootJarPath = mutableSetOf<String>()
         for (file in localInput) {
-            bootJarPath.add(file.absolutePath)
+            bootJarPath.add(file)
         }
         for (file in javaCompile.classpath) {
             if (file.absolutePath !in bootJarPath && file.exists()){
                 if (file.isDirectory){
-                    localInput.add(file)
+                    localInput.add(file.absolutePath)
                 }else{
-                    jarInput.add(file)
+                    jarInput.add(file.absolutePath)
                 }
             }
         }
         if (localInput.isNotEmpty()){
             val output = File(javaCompile.destinationDirectory.asFile.orNull.toString())
-            val task = AnchorRegisterLibraryTask(jarInput,localInput,output,project,isApp,
+            val task = AnchorRegisterLibraryTask(localInput.map(::File),output,project,
                 variantName
             )
             task.taskAction()
