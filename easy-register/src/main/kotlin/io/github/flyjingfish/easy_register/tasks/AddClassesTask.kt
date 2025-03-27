@@ -53,12 +53,14 @@ abstract class AddClassesTask : DefaultTask() {
         val searchJobs = mutableListOf<Deferred<Unit>>()
         //第一遍找配置文件
         allDirectories.forEach { directory ->
+            RegisterClassUtils.clear(directory.absolutePath)
             directory.walk().forEach { file ->
                 AsmUtils.processFileForConfig(directory,file,this@runBlocking,searchJobs)
             }
         }
         val jarFiles = mutableListOf<JarFile>()
         allJars.forEach { file ->
+            RegisterClassUtils.clear(file.absolutePath)
             jarFiles.add(AsmUtils.processJarForConfig(file,this@runBlocking,searchJobs))
         }
 

@@ -12,7 +12,7 @@ class MainActivity: AppCompatActivity(){
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        Log.e("MainActivity","=====>>>>")
+        Log.e("MainActivity","=====>>>>ww22www")
     }
 
 

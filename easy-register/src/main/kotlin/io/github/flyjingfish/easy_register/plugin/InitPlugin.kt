@@ -105,13 +105,7 @@ object InitPlugin{
             it.variant = variant.name
 
         }
-        taskProvider.configure { task ->
-            task.dependsOn("compile${variant.name.capitalized()}JavaWithJavac")
-            task.outputs.upToDateWhen { return@upToDateWhen false }
-            task.doFirst{
-                task.setFrom(allDirectories.map(::File),allJars.map(::File))
-            }
-        }
+
         variant.artifacts
             .forScope(ScopedArtifacts.Scope.PROJECT)
             .use(taskProvider)
@@ -119,6 +113,15 @@ object InitPlugin{
                 ScopedArtifact.CLASSES,
                 AddClassesTask::output
             )
+
+        taskProvider.configure { task ->
+            task.output.set(project.layout.buildDirectory.file("intermediates/classes/${taskProvider.name}/").get().asFile)
+            task.dependsOn("compile${variant.name.capitalized()}JavaWithJavac")
+            task.outputs.upToDateWhen { return@upToDateWhen false }
+            task.doFirst{
+                task.setFrom(allDirectories.map(::File),allJars.map(::File))
+            }
+        }
     }
 
     fun collectAllPaths(project: Project,allJars:MutableSet<String>,allDirectories :MutableSet<String>) {
@@ -137,16 +140,16 @@ object InitPlugin{
         }
     }
 
-    private fun collectKotlinPaths(kotlinCompile: KotlinCompileTool, jarInputs :MutableSet<String>, localInputs:MutableSet<String>){
-        collectPath(kotlinCompile.destinationDirectory.get().asFile, kotlinCompile.libraries,jarInputs, localInputs)
+    private fun collectKotlinPaths(kotlinCompile: KotlinCompileTool, allJars :MutableSet<String>, allDirectories:MutableSet<String>){
+        collectPath(kotlinCompile.destinationDirectory.get().asFile, kotlinCompile.libraries,allJars, allDirectories)
     }
 
 
-    private fun collectJavaPaths(javaCompile: AbstractCompile, jarInputs :MutableSet<String>, localInputs:MutableSet<String>){
-        collectPath(File(javaCompile.destinationDirectory.asFile.orNull.toString()),javaCompile.classpath,jarInputs, localInputs)
+    private fun collectJavaPaths(javaCompile: AbstractCompile, allJars :MutableSet<String>, allDirectories:MutableSet<String>){
+        collectPath(File(javaCompile.destinationDirectory.asFile.orNull.toString()),javaCompile.classpath,allJars, allDirectories)
     }
 
-    private fun collectPath(outputDir: File,classpath :FileCollection, jarInputs :MutableSet<String>, localInputs:MutableSet<String>){
+    private fun collectPath(outputDir: File, classpath :FileCollection, allJars :MutableSet<String>, allDirectories:MutableSet<String>){
         val localInput = mutableSetOf<String>()
         if (outputDir.exists()){
             localInput.add(outputDir.absolutePath)
@@ -166,8 +169,8 @@ object InitPlugin{
                 }
             }
         }
-        jarInputs.addAll(jarInput)
-        localInputs.addAll(localInput)
+        allJars.addAll(jarInput)
+        allDirectories.addAll(localInput)
     }
 
 }

@@ -113,6 +113,7 @@ abstract class AllClassesTask : DefaultTransformTask() {
             AsmUtils.processFileForConfig(directory,file,this@runBlocking,searchJobs)
         }
         for (directory in ignoreJarClassPaths) {
+            RegisterClassUtils.clear(directory.absolutePath)
             directory.walk().forEach { file ->
                 processFile(directory,file)
             }
@@ -120,12 +121,14 @@ abstract class AllClassesTask : DefaultTransformTask() {
 
         //第一遍找配置文件
         allDirectoryFiles.forEach { directory ->
+            RegisterClassUtils.clear(directory.absolutePath)
             directory.walk().forEach { file ->
                 processFile(directory,file)
             }
         }
         val jarFiles = mutableListOf<JarFile>()
         allJarFiles.forEach { file ->
+            RegisterClassUtils.clear(file.absolutePath)
             if (file.absolutePath in ignoreJar){
                 return@forEach
             }

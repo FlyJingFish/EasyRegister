@@ -66,11 +66,11 @@ object RegisterClassUtils {
         }
     }
 
-//    fun clear(moduleName: String){
-//        for (searchWovenClass in searchWovenClasses) {
-//            searchWovenClass.clear(moduleName)
-//        }
-//    }
+    fun clear(moduleName: String){
+        for (searchWovenClass in searchWovenClasses) {
+            searchWovenClass.clear(moduleName)
+        }
+    }
 
     fun getClasses():List<WovenClass>{
         return searchWovenClasses
