@@ -123,8 +123,8 @@ easyRegister.configJson = example.json
     "searchClass": {
       "regex": "正则表达式",//查找的类，使用正则表达式来 匹配类名
       "extendsClass": "继承的类名", //查找的类，继承类或接口的类名
-      "callType": "调用搜索到的类型，caller，callee",//caller表示注解调用查找到的类的 callMethod，callee表示调用 callClass 的 callMethod 传入查找到的类
-      "callClass": "调用的的类名如果是caller不填，如果是callee就填相应的类类名",
+      "callType": "调用搜索到的类型，caller，callee",//caller表示调用查找到的类的 callMethod，callee表示调用 callClass 的 callMethod 传入查找到的类
+      "callClass": "调用的的类名如果是caller不填，如果是callee就填 callMethod 相应的类类名",
       "callMethod": "调用的的方法名包括参数类型和返回类型",//例如void register(String)
       "callMethodValue": "调用的的方法填写参数,searchClass 就是当前数据，$n就是注入方法的参数,n代表第几个",// 填写 searchClass 就是使用查找到的类；填写 $n 就是使用 wovenMethod 的第几个参数
       "useType": "使用的类型，className，new，class，如果是callee必填，否则不填",//如果是 caller 不需要填写，如果是callee，当callMethodValue填写searchClass时，className就是类名字符串，new 就是创建对象，class就是类的class对象
