@@ -31,7 +31,7 @@ class EasyRegisterPlugin : Plugin<Project> {
         val isAnchorStr = project.properties[RootStringConfig.ANCHOR.propertyName]?: RootStringConfig.ANCHOR.defaultValue
         val isAnchor = isAnchorStr == "true"
         if (isAnchor){
-            InitPlugin.registerApp(project,true,false)
+            InitPlugin.registerApp(project,false)
         }else{
             InitPlugin.registerApp(project)
         }

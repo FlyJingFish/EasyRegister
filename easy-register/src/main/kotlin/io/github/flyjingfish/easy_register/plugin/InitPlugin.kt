@@ -10,12 +10,13 @@ import com.android.build.gradle.AppPlugin
 import io.github.flyjingfish.easy_register.config.RootStringConfig
 import io.github.flyjingfish.easy_register.tasks.AddClassesTask
 import io.github.flyjingfish.easy_register.tasks.AllClassesTask
-import io.github.flyjingfish.easy_register.tasks.HintCleanTask
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
+import io.github.flyjingfish.easy_register.utils.collectJavaPaths
+import io.github.flyjingfish.easy_register.utils.collectKotlinPaths
 import io.github.flyjingfish.easy_register.visitor.MyClassVisitorFactory
 import io.github.flyjingfish.fast_transform.toTransformAll
 import org.gradle.api.Project
-import org.gradle.api.file.FileCollection
+import org.gradle.api.Task
 import org.gradle.api.tasks.compile.AbstractCompile
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileTool
@@ -42,17 +43,10 @@ object InitPlugin{
         RegisterClassUtils.initConfig(jsons)
     }
 
-    fun registerApp(project: Project, registerHint :Boolean = true, registerTransform :Boolean = true) {
+    fun registerApp(project: Project,registerTransform :Boolean = true) {
         val isApp = project.plugins.hasPlugin(AppPlugin::class.java)
         if (!isApp) {
             return
-        }
-        if (registerHint){
-            val taskName = "${project.name}HintCleanTask"
-            project.tasks.register(taskName, HintCleanTask::class.java)
-            project.afterEvaluate {
-                project.tasks.findByName("preBuild")?.finalizedBy(taskName)
-            }
         }
         if (registerTransform){
             registerTransformClassesWith(project)
@@ -61,16 +55,15 @@ object InitPlugin{
 
     fun registerTransformClassesWith(project: Project) {
         try {
-            val allJars = ConcurrentHashMap.newKeySet<String>()
-            val allDirectories = ConcurrentHashMap.newKeySet<String>()
-            collectAllPaths(project, allJars, allDirectories)
+            val compileTasks = mutableListOf<Task>()
+            collectAllCompileTasks(project, compileTasks)
             val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
             androidComponents.onVariants { variant ->
                 val buildTypeName = variant.buildType
                 val debugMode = RegisterClassUtils.isDebugMode(buildTypeName,variant.name)
                 try {
                     if (debugMode){
-                        transformClassesWith(project,variant,allJars, allDirectories)
+                        transformClassesWith(project,variant,compileTasks)
                     }else{
                         transform(project,variant)
                     }
@@ -89,7 +82,7 @@ object InitPlugin{
         variant.toTransformAll(task,RegisterClassUtils.fastDex)
     }
 
-    fun transformClassesWith(project: Project, variant: Variant,allJars :Set<String>,allDirectories:Set<String>) {
+    fun transformClassesWith(project: Project, variant: Variant,compileTasks:MutableList<Task>) {
         variant.instrumentation.transformClassesWith(
             MyClassVisitorFactory::class.java,
             InstrumentationScope.ALL
@@ -119,58 +112,31 @@ object InitPlugin{
             task.dependsOn("compile${variant.name.capitalized()}JavaWithJavac")
             task.outputs.upToDateWhen { return@upToDateWhen false }
             task.doFirst{
+                val allJars = ConcurrentHashMap.newKeySet<String>()
+                val allDirectories = ConcurrentHashMap.newKeySet<String>()
+                collectAllPaths(compileTasks, allJars, allDirectories)
                 task.setFrom(allDirectories.map(::File),allJars.map(::File))
             }
         }
     }
-
-    fun collectAllPaths(project: Project,allJars:MutableSet<String>,allDirectories :MutableSet<String>) {
+    fun collectAllPaths(compileTasks:MutableList<Task>,allJars:MutableSet<String>,allDirectories:MutableSet<String>) {
+        for (compileTask in compileTasks) {
+            if (compileTask is AbstractCompile){
+                compileTask.collectJavaPaths(allJars, allDirectories)
+            }else if (compileTask is KotlinCompileTool){
+                compileTask.collectKotlinPaths(allJars, allDirectories)
+            }
+        }
+    }
+    fun collectAllCompileTasks(project: Project, compileTasks:MutableList<Task>) {
         project.rootProject.gradle.taskGraph.addTaskExecutionGraphListener {
             for (task in it.allTasks) {
-                if (task is AbstractCompile){
-                    task.doLast {
-                        collectJavaPaths(task,allJars, allDirectories)
-                    }
-                }else if (task is KotlinCompileTool){
-                    task.doLast {
-                        collectKotlinPaths(task,allJars, allDirectories)
-                    }
+                if (task is AbstractCompile || task is KotlinCompileTool){
+                    compileTasks.add(task)
                 }
             }
         }
     }
 
-    private fun collectKotlinPaths(kotlinCompile: KotlinCompileTool, allJars :MutableSet<String>, allDirectories:MutableSet<String>){
-        collectPath(kotlinCompile.destinationDirectory.get().asFile, kotlinCompile.libraries,allJars, allDirectories)
-    }
-
-
-    private fun collectJavaPaths(javaCompile: AbstractCompile, allJars :MutableSet<String>, allDirectories:MutableSet<String>){
-        collectPath(File(javaCompile.destinationDirectory.asFile.orNull.toString()),javaCompile.classpath,allJars, allDirectories)
-    }
-
-    private fun collectPath(outputDir: File, classpath :FileCollection, allJars :MutableSet<String>, allDirectories:MutableSet<String>){
-        val localInput = mutableSetOf<String>()
-        if (outputDir.exists()){
-            localInput.add(outputDir.absolutePath)
-        }
-
-        val jarInput = mutableSetOf<String>()
-        val bootJarPath = mutableSetOf<String>()
-        for (file in localInput) {
-            bootJarPath.add(file)
-        }
-        for (file in classpath) {
-            if (file.absolutePath !in bootJarPath && file.exists()){
-                if (file.isDirectory){
-                    localInput.add(file.absolutePath)
-                }else{
-                    jarInput.add(file.absolutePath)
-                }
-            }
-        }
-        allJars.addAll(jarInput)
-        allDirectories.addAll(localInput)
-    }
 
 }

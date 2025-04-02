@@ -1,6 +1,9 @@
 package io.github.flyjingfish.easy_register.utils
 
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.compile.AbstractCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompileTool
 import org.objectweb.asm.Opcodes
 import java.io.File
 import java.io.FileInputStream
@@ -9,6 +12,7 @@ import java.io.InputStream
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.zip.ZipInputStream
+
 const val _CLASS = ".class"
 fun registerTransformIgnoreJarDir(project:Project, variantName:String):String{
     return project.buildDir.absolutePath+"/tmp/easy-register/${variantName}/tempTransformIgnoreJar/".adapterOSPath()
@@ -147,4 +151,47 @@ fun String.toClassPath():String {
 
 fun getWovenClassName(className:String,methodName:String,methodDesc:String):String{
     return className+"\$Woven"+(methodName+ methodDesc).computeMD5()
+}
+
+fun KotlinCompileTool.collectKotlinPaths(allJars :MutableSet<String>, allDirectories:MutableSet<String>){
+    collectPath(
+        destinationDirectory.get().asFile,
+        libraries,
+        allJars,
+        allDirectories
+    )
+}
+
+
+fun AbstractCompile.collectJavaPaths(allJars :MutableSet<String>, allDirectories:MutableSet<String>){
+    collectPath(
+        File(destinationDirectory.asFile.orNull.toString()),
+        classpath,
+        allJars,
+        allDirectories
+    )
+}
+
+private fun collectPath(outputDir: File, classpath : FileCollection, allJars :MutableSet<String>, allDirectories:MutableSet<String>){
+    val localInput = mutableSetOf<String>()
+    if (outputDir.exists()){
+        localInput.add(outputDir.absolutePath)
+    }
+
+    val jarInput = mutableSetOf<String>()
+    val bootJarPath = mutableSetOf<String>()
+    for (file in localInput) {
+        bootJarPath.add(file)
+    }
+    for (file in classpath) {
+        if (file.absolutePath !in bootJarPath && file.exists()){
+            if (file.isDirectory){
+                localInput.add(file.absolutePath)
+            }else{
+                jarInput.add(file.absolutePath)
+            }
+        }
+    }
+    allJars.addAll(jarInput)
+    allDirectories.addAll(localInput)
 }

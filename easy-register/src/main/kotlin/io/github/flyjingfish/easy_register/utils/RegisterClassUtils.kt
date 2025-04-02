@@ -84,66 +84,24 @@ object RegisterClassUtils {
         configJsonFileList.clear()
     }
 
-    private fun exportHintFile(project: Project){
-        val childProjects = project.childProjects
-        if (childProjects.isEmpty()){
-            return
-        }
-        childProjects.forEach { (_,value)->
-            JsonUtils.exportConfigJson(value)
-            exportHintFile(value)
-        }
-    }
-
-
     fun initConfig(project: Project){
-        val searchCls = JsonUtils.getJson(configJsonFileList)
-        var hadOldCount = 0
-        for (searchCl in searchCls) {
-            var hasOld = false
-            for (searchWovenClass in searchWovenClasses) {
-                if (searchCl == searchWovenClass){
-                    hasOld = true
-                }
-            }
-            if (hasOld){
-                hadOldCount++
-            }
-        }
-        if ((hadOldCount != searchCls.size && searchWovenClasses.isNotEmpty())){
-            searchWovenClasses.clear()
-            exportHintFile(project)
-            throw IllegalArgumentException("The config json file has changed, please clean project")
-        }
-        if (searchWovenClasses.isEmpty()){
-            searchWovenClasses.clear()
-            wovenClasses.clear()
-            searchClasses.clear()
-            searchWovenClasses.addAll(searchCls)
-            for (searchCl in searchCls) {
-                if (!searchCl.createWovenClass){
-                    wovenClasses.add(searchCl.wovenClass)
-                }
-                searchClasses.add(searchCl.searchClass)
-            }
-        }
-
-
+        initConfigClass(JsonUtils.getJson(configJsonFileList))
     }
 
     fun initConfig(jsons:List<String>){
-        val searchCls = JsonUtils.getJson4Str(jsons)
-        if (searchWovenClasses.isEmpty()){
-            searchWovenClasses.clear()
-            wovenClasses.clear()
-            searchClasses.clear()
-            searchWovenClasses.addAll(searchCls)
-            for (searchCl in searchCls) {
-                if (!searchCl.createWovenClass){
-                    wovenClasses.add(searchCl.wovenClass)
-                }
-                searchClasses.add(searchCl.searchClass)
+        initConfigClass(JsonUtils.getJson4Str(jsons))
+    }
+
+    private fun initConfigClass(searchCls:List<WovenClass>){
+        searchWovenClasses.clear()
+        wovenClasses.clear()
+        searchClasses.clear()
+        searchWovenClasses.addAll(searchCls)
+        for (searchCl in searchCls) {
+            if (!searchCl.createWovenClass){
+                wovenClasses.add(searchCl.wovenClass)
             }
+            searchClasses.add(searchCl.searchClass)
         }
     }
 

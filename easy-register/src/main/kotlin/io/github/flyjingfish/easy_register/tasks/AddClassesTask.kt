@@ -78,9 +78,9 @@ abstract class AddClassesTask : DefaultTask() {
             tmpOtherDir.deleteRecursively()
         }
         AsmUtils.createInitClass(tmpOtherDir)
-        val wovenCodeJobs = mutableListOf<Deferred<Unit>>()
-        val needDeleteFiles = mutableListOf<String>()
+        val wovenCodeJobs = mutableListOf<Deferred<Any>>()
         val outputDir = File(output.get().asFile.absolutePath)
+        val needDeleteFiles = outputDir.walk().filter { it.isFile }.map { it.absolutePath }.toMutableList()
         for (file in tmpOtherDir.walk()) {
             if (file.isFile) {
                 val job = async(Dispatchers.IO) {
@@ -88,16 +88,22 @@ abstract class AddClassesTask : DefaultTask() {
                     val target = File(outputDir.absolutePath + File.separatorChar + relativePath)
                     target.checkExist()
                     synchronized(needDeleteFiles){
-                        needDeleteFiles.add(target.absolutePath)
+                        needDeleteFiles.remove(target.absolutePath)
                     }
-                    file.inputStream().use {
-                        target.saveEntry(it)
-                    }
+                    file.copyTo(target,true)
                 }
                 wovenCodeJobs.add(job)
             }
         }
         wovenCodeJobs.awaitAll()
+        withContext(Dispatchers.IO){
+            for (needDeleteFile in needDeleteFiles) {
+                val file = File(needDeleteFile)
+                if (file.exists()){
+                    file.delete()
+                }
+            }
+        }
 //        RegisterClassUtils.clearInputs()
     }
 
