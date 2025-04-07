@@ -79,7 +79,7 @@ Depend on plugins in <code>build.gradle</code> in the <strong>project root direc
   
   plugins {
     //Required item 👇 Note that the apply setting must be true
-    id "io.github.FlyJingFish.EasyRegister" version "1.0.8" apply false
+    id "io.github.FlyJingFish.EasyRegister" version "1.0.9" apply false
   }
   ```
 
@@ -89,7 +89,7 @@ Depend on plugins in <code>build.gradle</code> in the <strong>project root direc
   buildscript {
     dependencies {
       //Required item 👇
-      classpath 'io.github.FlyJingFish.EasyRegister:plugin:1.0.8'
+      classpath 'io.github.FlyJingFish.EasyRegister:plugin:1.0.9'
     }
   }
   ```
@@ -161,7 +161,7 @@ Introducing this plugin can embed anchor code into the aar package. Choosing thi
 ```gradle
 
 dependencies {
-  implementation 'io.github.FlyJingFish.EasyRegister:plugin:1.0.8'
+  implementation 'io.github.FlyJingFish.EasyRegister:plugin:1.0.9'
 }
 ```
 
