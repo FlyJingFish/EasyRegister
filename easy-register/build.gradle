@@ -29,7 +29,7 @@ gradlePlugin {
     plugins {
         EasyRegister {
             // 插件id
-            id = PROJ_GROUP
+            id = PROJ_GROUP+"."+"easyregister"
             // 插件全路径
             implementationClass = "io.github.flyjingfish.easy_register.EasyRegisterPlugin"
             // 插件名称
@@ -42,11 +42,3 @@ gradlePlugin {
     }
 }
 
-publishing {
-    publications {
-        pluginMaven(MavenPublication) {
-            // 和maven仓库artifactId保持一致
-            artifactId = PROJ_NAME
-        }
-    }
-}

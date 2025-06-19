@@ -11,6 +11,7 @@ import io.github.flyjingfish.easy_register.config.RootStringConfig
 import io.github.flyjingfish.easy_register.tasks.AddClassesTask
 import io.github.flyjingfish.easy_register.tasks.AllClassesTask
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
+import io.github.flyjingfish.easy_register.utils.RuntimeProject
 import io.github.flyjingfish.easy_register.utils.collectJavaPaths
 import io.github.flyjingfish.easy_register.utils.collectKotlinPaths
 import io.github.flyjingfish.easy_register.visitor.MyClassVisitorFactory
@@ -76,8 +77,10 @@ object InitPlugin{
     }
 
     fun transform(project: Project,variant: Variant) {
+        val runtimeProject = RuntimeProject.get(project)
         val task = project.tasks.register("${variant.name}EasyRegisterAllClasses", AllClassesTask::class.java){
             it.variant = variant.name
+            it.runtimeProject = runtimeProject
         }
         variant.toTransformAll(task,RegisterClassUtils.fastDex)
     }
@@ -93,10 +96,11 @@ object InitPlugin{
         variant.instrumentation.setAsmFramesComputationMode(
             FramesComputationMode.COPY_FRAMES
         )
+        val runtimeProject = RuntimeProject.get(project)
         val taskProvider = project.tasks.register("${variant.name}EasyRegisterAddClasses",
             AddClassesTask::class.java){
             it.variant = variant.name
-
+            it.runtimeProject = runtimeProject
         }
 
         variant.artifacts

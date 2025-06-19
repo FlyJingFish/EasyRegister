@@ -1,8 +1,8 @@
 package io.github.flyjingfish.easy_register.tasks
 
 import io.github.flyjingfish.easy_register.utils.JsonUtils
+import io.github.flyjingfish.easy_register.utils.RuntimeProject
 import io.github.flyjingfish.easy_register.utils._CLASS
-import io.github.flyjingfish.easy_register.utils.registerCompileTempDir
 import io.github.flyjingfish.easy_register.utils.checkExist
 import io.github.flyjingfish.easy_register.utils.getRelativePath
 import io.github.flyjingfish.easy_register.utils.printLog
@@ -15,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -26,7 +25,7 @@ import kotlin.system.measureTimeMillis
 class AnchorRegisterLibraryTask(
     private val allDirectories: List<File>,
     private val output: File,
-    private val project: Project,
+    private val project: RuntimeProject,
     private val variantName:String,
 ) {
 

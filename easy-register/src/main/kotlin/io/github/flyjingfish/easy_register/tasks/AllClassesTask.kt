@@ -2,6 +2,7 @@ package io.github.flyjingfish.easy_register.tasks
 
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
 import io.github.flyjingfish.easy_register.utils.AsmUtils
+import io.github.flyjingfish.easy_register.utils.RuntimeProject
 import io.github.flyjingfish.easy_register.utils.computeMD5
 import io.github.flyjingfish.easy_register.utils.getFileClassname
 import io.github.flyjingfish.easy_register.utils.getRelativePath
@@ -20,30 +21,19 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.gradle.api.DefaultTask
-import org.gradle.api.file.Directory
-import org.gradle.api.file.RegularFile
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.TaskAction
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
-import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.InputStream
-import java.util.jar.JarEntry
 import java.util.jar.JarFile
-import java.util.jar.JarOutputStream
 import kotlin.system.measureTimeMillis
 
 
 abstract class AllClassesTask : DefaultTransformTask() {
-
+    @get:Input
+    abstract var runtimeProject : RuntimeProject
     @get:Input
     abstract var variant :String
 
@@ -99,7 +89,7 @@ abstract class AllClassesTask : DefaultTransformTask() {
             jarFile.close()
         }
         if (ignoreJar.isNotEmpty()){
-            val temporaryDir = File(registerTransformIgnoreJarDir(project,variant))
+            val temporaryDir = File(registerTransformIgnoreJarDir(runtimeProject,variant))
             for (path in ignoreJar) {
                 val destDir = "${temporaryDir.absolutePath}${File.separatorChar}${File(path).name.computeMD5()}"
                 val destFile = File(destDir)
@@ -219,7 +209,7 @@ abstract class AllClassesTask : DefaultTransformTask() {
             jarFiles.add(jarFile)
         }
 
-        val tmpOtherDir = File(registerCompileTempDir(project,variant))
+        val tmpOtherDir = File(registerCompileTempDir(runtimeProject,variant))
         AsmUtils.createInitClass(tmpOtherDir)
         for (file in tmpOtherDir.walk()) {
             if (file.isFile) {

@@ -14,22 +14,22 @@ import java.security.NoSuchAlgorithmException
 import java.util.zip.ZipInputStream
 
 const val _CLASS = ".class"
-fun registerTransformIgnoreJarDir(project:Project, variantName:String):String{
+fun registerTransformIgnoreJarDir(project:RuntimeProject, variantName:String):String{
     return project.buildDir.absolutePath+"/tmp/easy-register/${variantName}/tempTransformIgnoreJar/".adapterOSPath()
 }
 
-fun registerCompileTempJson(project:Project, variantName:String):String{
+fun registerCompileTempJson(project:RuntimeProject, variantName:String):String{
     return project.buildDir.absolutePath + "/tmp/easy-register/${variantName}/tempCompileClassJson/needDelClassInfo.json".adapterOSPath()
 }
 
-fun registerCompileTempWovenJson(project:Project, variantName:String):String{
+fun registerCompileTempWovenJson(project:RuntimeProject, variantName:String):String{
     return project.buildDir.absolutePath + "/tmp/easy-register/${variantName}/tempCompileClassJson/needDelWovenClassInfo.json".adapterOSPath()
 }
-fun registerCompileTempDir(project: Project, variantName:String):String{
+fun registerCompileTempDir(project: RuntimeProject, variantName:String):String{
     return project.buildDir.absolutePath + "/tmp/easy-register/${variantName}/tempCompileClass/".adapterOSPath()
 }
 
-fun hintCleanFile(project: Project):String{
+fun hintCleanFile(project: RuntimeProject):String{
     return project.buildDir.absolutePath + "/tmp/easy-register/hintClean.json".adapterOSPath()
 }
 

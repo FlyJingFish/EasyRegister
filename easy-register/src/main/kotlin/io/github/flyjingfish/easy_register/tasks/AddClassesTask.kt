@@ -2,11 +2,11 @@ package io.github.flyjingfish.easy_register.tasks
 
 import io.github.flyjingfish.easy_register.utils.AsmUtils
 import io.github.flyjingfish.easy_register.utils.RegisterClassUtils
+import io.github.flyjingfish.easy_register.utils.RuntimeProject
 import io.github.flyjingfish.easy_register.utils.checkExist
 import io.github.flyjingfish.easy_register.utils.getRelativePath
 import io.github.flyjingfish.easy_register.utils.printLog
 import io.github.flyjingfish.easy_register.utils.registerCompileTempDir
-import io.github.flyjingfish.easy_register.utils.saveEntry
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -24,6 +24,8 @@ import kotlin.system.measureTimeMillis
 
 
 abstract class AddClassesTask : DefaultTask() {
+    @get:Input
+    abstract var runtimeProject : RuntimeProject
     @get:Input
     abstract var variant :String
 
@@ -73,7 +75,7 @@ abstract class AddClassesTask : DefaultTask() {
             }
         }
 
-        val tmpOtherDir = File(registerCompileTempDir(project,variant))
+        val tmpOtherDir = File(registerCompileTempDir(runtimeProject,variant))
         if (tmpOtherDir.exists()){
             tmpOtherDir.deleteRecursively()
         }

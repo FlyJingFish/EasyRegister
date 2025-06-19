@@ -81,11 +81,11 @@ object JsonUtils {
         return searchClassList
     }
 
-    fun exportConfigJson(project: Project) {
-        val jsonFile = File(hintCleanFile(project))
-        jsonFile.checkExist()
-        saveFile(jsonFile, "")
-    }
+//    fun exportConfigJson(project: Project) {
+//        val jsonFile = File(hintCleanFile(project))
+//        jsonFile.checkExist()
+//        saveFile(jsonFile, "")
+//    }
     private fun saveFile(file: File, data: String) {
         val fos = FileOutputStream(file.absolutePath)
         try {
@@ -106,7 +106,7 @@ object JsonUtils {
 
     }
 
-    fun deleteNeedDelFile(project:Project, variantName:String){
+    fun deleteNeedDelFile(project:RuntimeProject, variantName:String){
         val json : NeedDelFileJson? = optFromJsonString(
             readAsString(registerCompileTempJson(project,variantName)),
             NeedDelFileJson::class.java)
@@ -120,17 +120,17 @@ object JsonUtils {
         }
     }
 
-    fun deleteNeedDelWovenFile(project:Project, variantName:String){
-        val json : NeedDelFileJson? = optFromJsonString(
-            readAsString(registerCompileTempWovenJson(project,variantName)),
-            NeedDelFileJson::class.java)
-        json?.let {
-            it.cacheFileJson.forEach {filePath ->
-                val file = File(filePath)
-                if (file.exists()){
-                    file.delete()
-                }
-            }
-        }
-    }
+//    fun deleteNeedDelWovenFile(project:Project, variantName:String){
+//        val json : NeedDelFileJson? = optFromJsonString(
+//            readAsString(registerCompileTempWovenJson(project,variantName)),
+//            NeedDelFileJson::class.java)
+//        json?.let {
+//            it.cacheFileJson.forEach {filePath ->
+//                val file = File(filePath)
+//                if (file.exists()){
+//                    file.delete()
+//                }
+//            }
+//        }
+//    }
 }

@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://central.sonatype.com/search?q=io.github.flyjingfish.EasyRegister"><img
-    src="https://img.shields.io/maven-central/v/io.github.FlyJingFish.EasyRegister/plugin"
+   <a href="https://central.sonatype.com/artifact/io.github.flyjingfish/easyregister"><img
+    src="https://img.shields.io/maven-central/v/io.github.flyjingfish/easyregister"
     alt="Build"
   /></a>
   <a href="https://github.com/FlyJingFish/EasyRegister/stargazers"><img
@@ -81,7 +81,7 @@
   
   plugins {
       //必须项 👇 注意 apply 设置必须为 true 
-      id "io.github.FlyJingFish.EasyRegister" version "1.0.9" apply false
+      id "io.github.flyjingfish.easyregister" version "1.0.9" apply false
   }
   ```
 
@@ -91,7 +91,7 @@
     buildscript {
         dependencies {
             //必须项 👇
-            classpath 'io.github.FlyJingFish.EasyRegister:plugin:1.0.9'
+            classpath 'io.github.flyjingfish:easyregister:1.0.9'
         }
     }
     ```
@@ -169,7 +169,7 @@ plugins {
 ```gradle
 
 dependencies {
-    implementation 'io.github.FlyJingFish.EasyRegister:plugin:1.0.9'
+    implementation 'io.github.flyjingfish:easyregister:1.0.9'
 }
 ```
 
