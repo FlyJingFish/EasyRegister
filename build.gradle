@@ -2,7 +2,7 @@
 buildscript {
     dependencies {
         classpath 'org.jetbrains.kotlin:kotlin-serialization:1.5.0'
-        classpath 'io.github.FlyJingFish.EasyRegister:plugin:'+TestVersion
+        classpath 'io.github.flyjingfish:easyregister:'+TestVersion
     }
 }
 plugins {
@@ -96,7 +96,7 @@ subprojects { subproject ->
     subproject.afterEvaluate {
         def list = new ArrayList<String>()
         subproject.tasks.forEach { task ->
-            if ("publishAllPublicationsToNexusRepository" == task.name){
+            if ("publishAllPublicationsToMavenCentralRepository" == task.name){
                 list.add("${subproject.path}:publishMavenJavaPublicationToMavenLocal")
             }
         }
