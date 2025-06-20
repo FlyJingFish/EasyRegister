@@ -4,7 +4,7 @@ plugins {
     id 'kotlinx-serialization'
     id 'easy.register'
 }
-
+apply from: "$rootDir/gradle/android_base.gradle"
 android {
     namespace 'com.flyjingfish.easy_register'
     compileSdk 33

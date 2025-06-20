@@ -1,14 +1,15 @@
 [
   {
     "wovenClass": "com.flyjingfish.easy_register.base.InitCollect",
-    "wovenMethod": "void testEasyRegister()",
+    "wovenMethod": "void testEasyRegister(android.app.Application)",
     "createWovenClass": false,
+    "insertBefore": true,
     "searchClass": {
       "regex": "",
       "extendsClass": "com.flyjingfish.easy_register.base.SubApplication",
       "callType": "callee",
       "callClass": "com.flyjingfish.easy_register.base.InitCollect",
-      "callMethod": "void addEasyRegister(String)",
+      "callMethod": "void addEasyRegister(com.flyjingfish.easy_register.base.SubApplication)",
       "callMethodValue": "searchClass",
       "useType": "new"
     }

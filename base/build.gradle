@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.com.android.library)
     alias(libs.plugins.org.jetbrains.kotlin.android)
 }
-
+apply from: "$rootDir/gradle/android_base.gradle"
 android {
     namespace 'com.flyjingfish.easy_register.base'
     compileSdk 33
@@ -12,13 +12,6 @@ android {
 
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
 }
 
 dependencies {

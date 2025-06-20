@@ -38,7 +38,7 @@ class RegisterClassVisitor(cv: ClassVisitor?) : ClassVisitor(Opcodes.ASM9, cv) {
         }
         return if (wovenClass != null){
             val mv = super.visitMethod(newAccess, name, descriptor, signature, exceptions)
-            MyMethodAdapter(mv, newAccess, name, descriptor)
+            MyMethodAdapter(mv, newAccess, name, descriptor,wovenClass.insertBefore)
         }else{
             super.visitMethod(newAccess, name, descriptor, signature, exceptions)
         }
@@ -47,26 +47,34 @@ class RegisterClassVisitor(cv: ClassVisitor?) : ClassVisitor(Opcodes.ASM9, cv) {
 //        }
     }
 
-    inner class MyMethodAdapter(mv: MethodVisitor, access: Int, private val mName: String, private val mDesc: String) :
+    inner class MyMethodAdapter(mv: MethodVisitor, access: Int, private val mName: String, private val mDesc: String,
+                                private val insertBefore: Boolean) :
         AdviceAdapter(Opcodes.ASM9, mv, access, mName, mDesc) {
-
+        override fun onMethodEnter() {
+            super.onMethodEnter()
+            if (insertBefore){
+                insertCode()
+            }
+        }
         override fun visitInsn(opcode: Int) {
-            if (opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN) {
-
-                val argTypes = Type.getArgumentTypes(mDesc)
-                for ((index,_) in argTypes.withIndex()) {
-                    mv.visitVarInsn(Opcodes.ALOAD, index)
-                }
-                mv.visitMethodInsn(
-                    INVOKESTATIC,
-                    getWovenClassName(className,mName, mDesc),
-                    INVOKE_METHOD,
-                    mDesc,
-                    false
-                )
-
+            if (!insertBefore && opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN) {
+                insertCode()
             }
             super.visitInsn(opcode)
+        }
+
+        private fun insertCode(){
+            val argTypes = Type.getArgumentTypes(mDesc)
+            for ((index,_) in argTypes.withIndex()) {
+                mv.visitVarInsn(Opcodes.ALOAD, index)
+            }
+            mv.visitMethodInsn(
+                INVOKESTATIC,
+                getWovenClassName(className,mName, mDesc),
+                INVOKE_METHOD,
+                mDesc,
+                false
+            )
         }
     }
 }
