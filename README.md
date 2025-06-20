@@ -118,6 +118,7 @@ easyRegister.configJson = example.json
     "wovenClass": "Injected class name",
     "wovenMethod": "Injected method name includes parameter type and return type", //For example, void register(String)
     "createWovenClass": false, //Does the injected class need to be newly created?
+    "insertBefore": true,//Whether to insert it before the method
     "searchClass": {
       "regex": "Regular expression", //Class to search, use regular expression to match class name(At least one of regex and extendsClass must be filled in, or both must be filled in)
       "extendsClass": "Inherited class name", //Class to search, inherited class or interface class name
