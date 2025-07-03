@@ -109,8 +109,8 @@ def updateREADME(readme,oldVersionName,newVersionName) {
     File configFile = new File(readme)
     String exportText = configFile.text
     String text = exportText.replace("io.github.flyjingfish:easyregister:"+oldVersionName,"io.github.flyjingfish:easyregister:"+newVersionName)
-    text = text.replace("id \"io.github.flyjingfish.easyregister\" version \""+oldVersionName+"\"","id \"io.github.flyjingfish.easyregister\" version \""+newVersionName+"\"")
-    text = text.replace("id(\"io.github.flyjingfish.easyregister\") version \""+oldVersionName+"\"","id(\"io.github.flyjingfish.easyregister\") version \""+newVersionName+"\"")
+    text = text.replace("id \"io.github.FlyJingFish.EasyRegister\" version \""+oldVersionName+"\"","id \"io.github.FlyJingFish.EasyRegister\" version \""+newVersionName+"\"")
+    text = text.replace("id(\"io.github.FlyJingFish.EasyRegister\") version \""+oldVersionName+"\"","id(\"io.github.FlyJingFish.EasyRegister\") version \""+newVersionName+"\"")
     configFile.write(text)
 }
 
