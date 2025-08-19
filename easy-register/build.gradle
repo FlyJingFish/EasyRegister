@@ -2,14 +2,12 @@ plugins {
     id 'groovy'
     id 'maven-publish'
     id 'org.jetbrains.kotlin.jvm'
-    id 'com.gradle.plugin-publish' version '1.2.1'
 }
 javadoc {
     title = "EasyRegister Plugin ${version} API"
     options.bottom = 'EasyRegister'
 }
 apply from: "$rootDir/gradle/java_base.gradle"
-apply from: "$rootDir/gradle/java_publish.gradle"
 
 dependencies {
     implementation gradleApi()
@@ -22,23 +20,29 @@ dependencies {
     implementation libs.kotlinx.coroutines
     implementation libs.fastTransform
 }
-// 发布到gradlePluginPortal
-gradlePlugin {
-    website = PROJ_WEBSITEURL
-    vcsUrl = PROJ_VCSURL
-    plugins {
-        EasyRegister {
-            // 插件id
-            id = PROJ_GROUP+"."+"easyregister"
-            // 插件全路径
-            implementationClass = "io.github.flyjingfish.easy_register.EasyRegisterPlugin"
-            // 插件名称
-            displayName = 'EasyRegister Plugin'
-            //描述
-            description = PROJ_DESCRIPTION
-            //标签
-            tags.addAll('EasyRegister', 'FlyJingFish', 'android', 'aop')
+if (publishGradle == "1"){
+    apply plugin: "com.gradle.plugin-publish"
+    // 发布到gradlePluginPortal
+    gradlePlugin {
+        website = PROJ_WEBSITEURL
+        vcsUrl = PROJ_VCSURL
+        plugins {
+            EasyRegister {
+                // 插件id
+                id = PROJ_GROUP+"."+"easyregister"
+                // 插件全路径
+                implementationClass = "io.github.flyjingfish.easy_register.EasyRegisterPlugin"
+                // 插件名称
+                displayName = 'EasyRegister Plugin'
+                //描述
+                description = PROJ_DESCRIPTION
+                //标签
+                tags.addAll('EasyRegister', 'FlyJingFish', 'android', 'aop')
+            }
         }
     }
+}else{
+    apply from: "$rootDir/gradle/java_publish.gradle"
 }
+
 
