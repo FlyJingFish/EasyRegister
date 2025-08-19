@@ -98,7 +98,7 @@ subprojects { subproject ->
         def list = new ArrayList<String>()
         subproject.tasks.forEach { task ->
             if ("publishAllPublicationsToMavenCentralRepository" == task.name){
-                list.add("${subproject.path}:publishMavenJavaPublicationToMavenLocal")
+                list.add("${subproject.path}:publishMavenPublicationToMavenLocal")
             }
         }
         aaBumpVersion.finalizedBy(list.toArray())

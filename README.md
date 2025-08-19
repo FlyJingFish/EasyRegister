@@ -82,7 +82,7 @@
   
   plugins {
       //必须项 👇 注意 apply 设置必须为 true 
-      id "io.github.flyjingfish.easyregister" version "1.1.0" apply false
+      id "io.github.flyjingfish.easyregister" version "1.1.1" apply false
   }
   ```
 
@@ -92,7 +92,7 @@
     buildscript {
         dependencies {
             //必须项 👇
-            classpath 'io.github.flyjingfish:easyregister:1.1.0'
+            classpath 'io.github.flyjingfish:easyregister:1.1.1'
         }
     }
     ```
@@ -171,7 +171,7 @@ plugins {
 ```gradle
 
 dependencies {
-    implementation 'io.github.flyjingfish:easyregister:1.1.0'
+    implementation 'io.github.flyjingfish:easyregister:1.1.1'
 }
 ```
 
